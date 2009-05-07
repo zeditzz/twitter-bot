@@ -17,10 +17,9 @@ public class TwitterUtil {
 
     public static void print() throws TwitterException {
         Twitter anonTwitter = new Twitter();
-        Twitter twitter = new Twitter(Config.TEST_TWITTER_USER, Config.TEST_TWITTER_PASSWORD);
+        Twitter twitter = new Twitter(Config.TWITTER_USER, Config.TWITTER_PASSWORD);
         twitter.setSource("web");
-        Twitter fmrTwitter = new Twitter("fredrikr", "fmr123");
-        Query query = new Query("schibsted OR vg.no OR finn.no OR aftenposten OR aftonbladet OR secondamano OR secundamano OR blocket.se");
+        Query query = new Query("cnn.com");
         query.setRpp(30);
         QueryResult result = anonTwitter.search(query);
         HashSet<String> users = new HashSet<String>();
@@ -31,10 +30,10 @@ public class TwitterUtil {
         }
         System.out.println("users = " + users);
         System.out.println("num users = " + users.size());
-        System.out.println(fmrTwitter);
-        String userId = fmrTwitter.getUserId();
+        System.out.println(twitter);
+        String userId = twitter.getUserId();
         System.out.println("USER: " + userId);
-        User user = twitter.getUserDetail("ntesttest");
+        User user = twitter.getUserDetail(Config.TWITTER_USER);
         System.out.println("USER-print: " + PrintUtil.print(user));
         System.out.println("USER-DET: " + user);
         System.out.println("USER-ID: " + user.getId());
@@ -42,7 +41,7 @@ public class TwitterUtil {
         System.out.println("USER-Name: " + user.getName());
         System.out.println("USER-lastupd: " + user.getStatusCreatedAt());
 
-        List<User> followers = fmrTwitter.getFollowers("arodland");
+        List<User> followers = twitter.getFollowers(Config.TWITTER_USER);
         System.out.println("f: " + followers);
 
         System.out.print("boston AND (");
@@ -50,8 +49,8 @@ public class TwitterUtil {
             System.out.print(follower.getScreenName() + " OR ");
         }
         System.out.println("");
-        System.out.println("FRIENDS: " + fmrTwitter.getFriends());
-        System.out.println("FOLLOW: " + fmrTwitter.getFollowers());
+        System.out.println("FRIENDS: " + twitter.getFriends());
+        System.out.println("FOLLOW: " + twitter.getFollowers());
 
         // XXX to follow
         //System.out.println(twitter.create("fredrikr"));
