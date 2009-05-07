@@ -10,10 +10,10 @@ import java.util.ArrayList;
  * Time: 10:55:30 AM
  */
 public class Config {
-    public static final String TWITTER_USER = "schibstednews";
-    public static final String TWITTER_PASSWORD = "fmr123";
-    public static final String TEST_TWITTER_USER = "ntesttest";
-    public static final String TEST_TWITTER_PASSWORD = "ntesttest1";
+    public static final String TWITTER_USER = "user";
+    public static final String TWITTER_PASSWORD = "pw";
+    //public static final String TEST_TWITTER_USER = "user2";
+    //public static final String TEST_TWITTER_PASSWORD = "pw2";
     public static final double FOLLOW_FACTOR = 1.2;
     public static final int DEFAULT_TWITTER_HITS = 30;
     public static final int TWITTER_FOLLOW_SEARCH_HITS = 50;
