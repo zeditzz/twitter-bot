@@ -15,12 +15,13 @@ public class Poster {
     static Logger log = Logger.getLogger(Poster.class);
     static Twitter twitter;
 
+    private static String twitterUser;
+    private static String twitterPassword;
+    private static String status;
 
     public static void main(String[] args) throws TwitterException {
-        String status;
-        if (args.length == 1) {
-            status = args[0];
-        } else {
+        init(args);
+        if (status == null) {
             status = "Please send me feedback if you have any on the amount and quality of news from @schibstednews. I know it's not perfect, but I'm trying.";
         }
         post(status);
@@ -38,10 +39,30 @@ public class Poster {
 
     private static Twitter getTwitter() {
         if (twitter == null) {
-            twitter = new Twitter(Config.TWITTER_USER, Config.TWITTER_PASSWORD);
+            twitter = new Twitter(twitterUser, twitterPassword);
             twitter.setSource("web");
         }
         return twitter;
+    }
+
+    public static void init(String[] args) {
+        if (args.length == 2) {
+            twitterUser = args[0];
+            twitterPassword = args[1];
+        } else if (args.length == 3) {
+            twitterUser = args[0];
+            twitterPassword = args[1];
+            status = args[3];
+        } else {
+            usage();
+            System.exit(2);
+        }
+    }
+
+    public static void usage() {
+        System.out.println("Twitter poster");
+        System.out.println("usage 1: java no.rodland.twitter.Poster <twitteruser> <twitterpassword>");
+        System.out.println("usage 2: java no.rodland.twitter.Poster <twitteruser> <twitterpassword> \"<MSG>\"");
     }
 
 }

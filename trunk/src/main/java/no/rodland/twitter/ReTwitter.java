@@ -14,11 +14,40 @@ import org.apache.log4j.Logger;
 public class ReTwitter {
     static Logger log = Logger.getLogger(ReTwitter.class);
 
+    private static String twitterUser;
+    private static String twitterPassword;
+    private static String statusId;
+
     public static void main(String[] args) throws TwitterException {
-        Twitter twitter = new Twitter(Config.TWITTER_USER, Config.TWITTER_PASSWORD);
+        init(args);
+
+        Twitter twitter = new Twitter(twitterUser, twitterPassword);
         twitter.setSource("web");
-        TwitterAPI.reTwitter(1715064044, twitter);
-        TwitterAPI.reTwitter(1715384404, twitter);
-        TwitterAPI.reTwitter(1713899058, twitter);
+        try {
+            long id = Long.valueOf(statusId);
+            TwitterAPI.reTwitter(id, twitter);
+        }
+        catch (NumberFormatException nfe) {
+            log.error(statusId + " is not a number, is it?");
+            usage();
+        }
     }
+
+
+    public static void init(String[] args) {
+        if (args.length == 3) {
+            twitterUser = args[0];
+            twitterPassword = args[1];
+            statusId = args[3];
+        } else {
+            usage();
+            System.exit(2);
+        }
+    }
+
+    public static void usage() {
+        System.out.println("Twitter poster");
+        System.out.println("usage 2: java no.rodland.twitter.ReTwitter <twitteruser> <twitterpassword> \"<MSG-ID>\"");
+    }
+
 }

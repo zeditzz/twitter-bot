@@ -13,19 +13,39 @@ import org.apache.log4j.Logger;
  */
 public class Follower {
     static Logger log = Logger.getLogger(Follower.class);
+    private static String twitterUser;
+    private static String twitterPassword;
+    private static String screenNameToFollow;
 
     public static void main(String[] args) throws TwitterException {
-        Twitter twitter = new Twitter(Config.TWITTER_USER, Config.TWITTER_PASSWORD);
-        twitter.setSource("web");
-        follow("jobbainorge", twitter);
+        init(args);
+        follow(screenNameToFollow);
     }
 
-    private static void follow(String screenName, Twitter twitter) {
+    private static void follow(String screenName) {
+        Twitter twitter = new Twitter(twitterUser, twitterPassword);
+        twitter.setSource("web");
         log.info("follow: " + screenName);
         try {
             log.info(twitter.create(screenName));
         } catch (TwitterException e) {
             log.error("error when trying to follow", e);
         }
+    }
+
+    public static void init(String[] args) {
+        if (args.length == 3) {
+            twitterUser = args[0];
+            twitterPassword = args[1];
+            screenNameToFollow = args[3];
+        } else {
+            usage();
+            System.exit(2);
+        }
+    }
+
+    public static void usage() {
+        System.out.println("Twitter poster");
+        System.out.println("usage 2: java no.rodland.twitter.ReTwitter <twitteruser> <twitterpassword> <scrrenname-to-follow>");
     }
 }

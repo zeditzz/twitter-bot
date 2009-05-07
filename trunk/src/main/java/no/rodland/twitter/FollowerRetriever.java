@@ -30,10 +30,14 @@ public class FollowerRetriever {
 
         int numberOfFollowers = followers.size();
         int numberOfFriends = friends.size();
+
         if (tooMany(numberOfFollowers, numberOfFriends)) {
             log.info("Following too many allreday.  exiting following..");
             return;
         }
+
+        int numerbNew = (int) ((Config.FOLLOW_FACTOR * numberOfFollowers) - numberOfFriends);
+        log.info("Should be able to follow " + numerbNew + " new followers...");
 
         Set<String> potential = getPotentialFollowers();
         int followedPosters = 0;
@@ -48,8 +52,8 @@ public class FollowerRetriever {
                     numberOfFriends++;
                     friends.add(potenitalId);
                 } catch (TwitterException e) {
-                    log.error("Error trying to befirend");
-                    e.printStackTrace();
+                    log.error("Error trying to befirend", e);
+                    //e.printStackTrace();
                 }
             } else {
                 log.info("already followed to many posters, will not follow now: " + potenitalId);
