@@ -5,8 +5,6 @@ import twitter4j.*;
 import java.util.List;
 import java.util.HashSet;
 
-import no.rodland.twitter.Config;
-
 /**
  * Created by IntelliJ IDEA.
  * User: fmr
@@ -14,10 +12,12 @@ import no.rodland.twitter.Config;
  * Time: 11:53:17 AM
  */
 public class TwitterUtil {
+    private static final String TWITTER_USER = "";
+    private static final String TWITTER_PASSWORD = "";
 
     public static void print() throws TwitterException {
         Twitter anonTwitter = new Twitter();
-        Twitter twitter = new Twitter(Config.TWITTER_USER, Config.TWITTER_PASSWORD);
+        Twitter twitter = new Twitter(TWITTER_USER, TWITTER_PASSWORD);
         twitter.setSource("web");
         Query query = new Query("cnn.com");
         query.setRpp(30);
@@ -33,7 +33,7 @@ public class TwitterUtil {
         System.out.println(twitter);
         String userId = twitter.getUserId();
         System.out.println("USER: " + userId);
-        User user = twitter.getUserDetail(Config.TWITTER_USER);
+        User user = twitter.getUserDetail(TWITTER_USER);
         System.out.println("USER-print: " + PrintUtil.print(user));
         System.out.println("USER-DET: " + user);
         System.out.println("USER-ID: " + user.getId());
@@ -41,7 +41,7 @@ public class TwitterUtil {
         System.out.println("USER-Name: " + user.getName());
         System.out.println("USER-lastupd: " + user.getStatusCreatedAt());
 
-        List<User> followers = twitter.getFollowers(Config.TWITTER_USER);
+        List<User> followers = twitter.getFollowers(TWITTER_USER);
         System.out.println("f: " + followers);
 
         System.out.print("boston AND (");
