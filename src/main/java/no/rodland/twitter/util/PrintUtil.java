@@ -6,6 +6,7 @@ import no.rodland.twitter.Posting;
 import java.util.List;
 
 
+@SuppressWarnings({"UnusedDeclaration"})
 public class PrintUtil {
     public static String print(User user) {
         return "User{" +

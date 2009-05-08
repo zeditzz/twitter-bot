@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 public class TwitterAPI {
-    private static Logger log = Logger.getLogger(TwitterAPI.class);
+    private static final Logger log = Logger.getLogger(TwitterAPI.class);
 
-    public static Posting getPosting(Status status) throws TwitterException {
+    public static Posting getPosting(Status status) {
         return new Posting(status.getCreatedAt(), getTitle(status), null, "Twitter: @" + status.getUser().getScreenName() + " (" + status.getId() + ")");
     }
 
@@ -147,8 +147,7 @@ public class TwitterAPI {
         }
 
         try {
-            Status twStatus = twitter.update(status);
-            //log.info(twStatus);
+            twitter.update(status);
         } catch (TwitterException e) {
             TwitterBot.log.error("Exception when posting update", e);
         }

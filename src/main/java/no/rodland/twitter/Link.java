@@ -10,13 +10,13 @@ import java.util.regex.Matcher;
  * Time: 8:00:52 PM
  */
 public class Link {
-    private static Pattern MULTIPLE_URLS = Pattern.compile("(https?://.*)*(https?://.*)");
-    private static Pattern GOOGLE_ENDING = Pattern.compile("([^&]*)&.*");
+    private static final Pattern MULTIPLE_URLS = Pattern.compile("(https?://.*)*(https?://.*)");
+    private static final Pattern GOOGLE_ENDING = Pattern.compile("([^&]*)&.*");
     private static final String FUNNY_HTTP = "http%3A";
     private static final String NORMAL_HTTP = "http:";
 
-    String origLink;
-    String simplified;
+    final String origLink;
+    final String simplified;
 
     public Link(String origLink) {
         this.origLink = origLink;

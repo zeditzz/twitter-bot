@@ -11,10 +11,12 @@ import java.util.HashSet;
  * Date: May 4, 2009
  * Time: 11:53:17 AM
  */
+@SuppressWarnings({"WeakerAccess", "UnusedDeclaration"})
 public class TwitterUtil {
     private static final String TWITTER_USER = "";
     private static final String TWITTER_PASSWORD = "";
 
+    @SuppressWarnings({})
     public static void print() throws TwitterException {
         Twitter anonTwitter = new Twitter();
         Twitter twitter = new Twitter(TWITTER_USER, TWITTER_PASSWORD);

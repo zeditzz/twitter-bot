@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  * Time: 10:51:26 AM
  */
 public class Poster {
-    static Logger log = Logger.getLogger(Poster.class);
+    static final Logger log = Logger.getLogger(Poster.class);
     static Twitter twitter;
 
     private static String twitterUser;

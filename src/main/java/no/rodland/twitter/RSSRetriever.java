@@ -66,14 +66,14 @@ import org.apache.log4j.Logger;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-public class RSSRetriever implements PostingRetriever {
-    static Logger log = Logger.getLogger(RSSRetriever.class);
+public class RSSRetriever {
+    private static final Logger log = Logger.getLogger(RSSRetriever.class);
     private static final String HTTP_AGENT = "NetNewsWire/3.1.7 (Mac OS X; http://www.newsgator.com/Individuals/NetNewsWire/)";
-    private List<String> feedurls;
-    private HttpClient http = new HttpClient();
-    private String fileName;
-    Set<String> linkSet = new HashSet<String>();   // only posting 1 unique link pr session
-    Set<String> titleSet = new HashSet<String>();  // only posting 1 unique title pr session
+    private final List<String> feedurls;
+    private final HttpClient http = new HttpClient();
+    // private String fileName;
+    private final Set<String> linkSet = new HashSet<String>();   // only posting 1 unique link pr session
+    private final Set<String> titleSet = new HashSet<String>();  // only posting 1 unique title pr session
 
 
 //    public static void main(String[] args) {
@@ -165,7 +165,7 @@ public class RSSRetriever implements PostingRetriever {
         return entries;
     }
 
-    private static Pattern MULTIPLE_URLS = Pattern.compile("https?://([^/]*\\.)?([^/]*\\.[^/]*)/.*");
+    private static final Pattern MULTIPLE_URLS = Pattern.compile("https?://([^/]*\\.)?([^/]*\\.[^/]*)/.*");
 
     public static String getSource(String url) {
         if (url == null) {
