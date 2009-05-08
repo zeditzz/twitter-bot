@@ -12,11 +12,11 @@ public class TwitterAPI {
     private static Logger log = Logger.getLogger(TwitterAPI.class);
 
     public static Posting getPosting(Status status) throws TwitterException {
-        return new Posting(status.getCreatedAt(), getTitle(status), null, "Twitter: @" + status.getUser().getScreenName());
+        return new Posting(status.getCreatedAt(), getTitle(status), null, "Twitter: @" + status.getUser().getScreenName() + " (" + status.getId() + ")");
     }
 
     public static Posting getPosting(Tweet tweet) {
-        return new Posting(tweet.getCreatedAt(), getTitle(tweet), null, "Twitter: @" + tweet.getFromUser());
+        return new Posting(tweet.getCreatedAt(), getTitle(tweet), null, "Twitter: @" + tweet.getFromUser() + " (" + tweet.getId() + ")");
     }
 
     public static String getTitle(Tweet tweet) {

@@ -62,7 +62,9 @@ public class FollowerRetriever {
                 }
             }
             else {
-                log.info("already followed to many posters, will not follow now: " + posterId);
+                log.info("already followed to many people, will not follow more for now.");
+                log.info("BTW: already following posters: " + alreadyFollowed);
+                return followedPosters;
             }
         }
 
@@ -97,7 +99,9 @@ public class FollowerRetriever {
                 }
             }
             else {
-                log.info("already followed to many followers, will not follow now: " + followerId);
+                log.info("already followed to many people, will not follow more for now.");
+                log.info("BTW: already following : " + alreadyFollowed);
+                return followedFollowers;
             }
         }
         log.info("already following potential followers: " + alreadyFollowed);
