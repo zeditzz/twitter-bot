@@ -1,12 +1,10 @@
 package no.rodland.twitter;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.*;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,7 +15,6 @@ import org.apache.log4j.Logger;
 public class Config {
     private static final Logger log = Logger.getLogger(Config.class);
     @SuppressWarnings({"FieldCanBeLocal", "MismatchedQueryAndUpdateOfCollection"})
-    private final Properties prop = new Properties();
 
     public static final double FOLLOW_FACTOR = 1.2;
     public static final int DEFAULT_TWITTER_HITS = 30;
@@ -28,44 +25,57 @@ public class Config {
     public static final int TWITTER_MSG_LENGTH = 140;
     public static final int MIN_TITLE_LENGTH = 15;
 
+    public static final String CFG_KEY_TWITTERUSER = "twitteruser";
+    public static final String CFG_KEY_TWITTERPASSWORD = "twitterpassword";
+    public static final String CFG_KEY_TWITTER_QUERY = "twitterquery";
+    public static final String CFG_KEY_FOLLOWER_QUERY = "followerquery";
+    public static final String CFG_KEY_RSS_QUERY = "rssquery";
+    public static final String CFG_KEY_SITES = "sites";
+
+    public  String twitterUser;
+    public String twitterPassword;
+
+    PropertiesConfiguration config;
+    private static final String CFG_KEY_LASTUPDATED = "lastupdated";
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public Config(String fileName) {
+    public Config(String fileName) throws ConfigurationException {
         log.info("Loading properties from " + fileName);
+        config = new PropertiesConfiguration(fileName);
+
+        twitterUser = config.getString(CFG_KEY_TWITTERUSER);
+        twitterPassword = config.getString(CFG_KEY_TWITTERPASSWORD);
+
+    }
+
+    public void update() {
+        update(new Date());
+    }
+
+    public void update(Date lastUpdated) {
+        config.setProperty(CFG_KEY_LASTUPDATED, lastUpdated.getTime());
+        log.info("setting last updated in " + config.getFileName() + " to " + config.getLong(CFG_KEY_LASTUPDATED));
         try {
-            prop.load(new FileInputStream(fileName));
-        } catch (IOException ex) {
-            log.error("Configuration file not found:" + ex.getMessage());
-            System.exit(-1);
+            config.save();
         }
-        //this.twitter = new Twitter(prop.getProperty("id"), prop.getProperty("password"));
-        //this.feedurl = prop.getProperty("feedurl");
-        //this.lastUpdate = new Date(Long.valueOf(prop.getProperty("lastUpdate", "0")));
-
+        catch (ConfigurationException e) {
+            log.error("ERROR setting last updated in " + config.getFileName() + " to " + config.getLong(CFG_KEY_LASTUPDATED), e);
+        }
     }
 
-    static List<String> getTwitterQueries() {
-        List<String> queries = new ArrayList<String>();
-        queries.add("schibsted");
-        queries.add("schibsteds");
-        queries.add("finn.no");
-        queries.add("nettby");
-        queries.add("finn_no");
-        queries.add("blocket.se");
-        queries.add("%22kjell+aamot%22");
-        return queries;
+    public Date getLastUpdated() {
+        long time = config.getLong(CFG_KEY_LASTUPDATED, 0);
+        return new Date(time);
     }
 
-    static List<String> getFollowerQueries() {
-        List<String> queries = new ArrayList<String>();
-        queries.add("schibsted");
-        queries.add("aftenposten");
-        queries.add("vg.no");
-        queries.add("aftonbladet");
-        queries.add("finn.no");
-        queries.add("blocket.se");
-        queries.add("%22kjell+aamot%22");
-        return queries;
+    @SuppressWarnings({"unchecked"})
+    List<String> getTwitterQueries() {
+        return config.getList(CFG_KEY_TWITTER_QUERY);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    List<String> getFollowerQueries() {
+        return config.getList(CFG_KEY_FOLLOWER_QUERY);
     }
 
     /**
@@ -73,24 +83,24 @@ public class Config {
      *
      * @return a list of ready-to-call RSS URLs.
      */
-    static List<String> getFeedUrls() {
-        List<String> queries = new ArrayList<String>();
-        queries.add("schibsted");
-        queries.add("%22kjell+aamot%22");
-        queries.add("%22finn.no%22");
-        queries.add("%22blocket.se%22");
-        List<String> sites = new ArrayList<String>();
-        sites.add("http://nyheter.abcsok.no/search/rss?rows=" + NUMBER_NEWS + "&q=");
-        sites.add("http://sesam.no/search/?c=m&x=0&y=0&layout=rss&q=");
-        sites.add("http://news.google.no/news?pz=1&ned=no_no&hl=no&as_qdr=w&as_drrb=q&scoring=n&output=rss&num=" + NUMBER_NEWS + "&q=");
-        sites.add("http://news.search.yahoo.com/news/rss?ei=UTF-8&eo=UTF-8&n=" + NUMBER_NEWS + "&p=");
-
+    List<String> getFeedUrls() {
+        List queries = config.getList(CFG_KEY_RSS_QUERY);
+        List sites = config.getList(CFG_KEY_SITES);
         List<String> myList = new ArrayList<String>();
-        for (String site : sites) {
-            for (String query : queries) {
+        for (Object siteObj : sites) {
+            String site = ((String) siteObj).replaceAll("NUMBER_NEWS", Integer.toString(NUMBER_NEWS));
+            for (Object query : queries) {
                 myList.add(site + query);
             }
         }
         return myList;
+    }
+
+    @Override
+    public String toString() {
+        return "getTwitterQueries() = " + getTwitterQueries() + "\n" +
+                "getFeedUrls() = " + getFeedUrls() + "\n" +
+                "getFollowerQueries() = " + getFollowerQueries() + "\n" +
+                "getLastUpdated() = " + getLastUpdated();
     }
 }

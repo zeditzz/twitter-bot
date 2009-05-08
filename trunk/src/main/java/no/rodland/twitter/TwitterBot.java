@@ -5,45 +5,65 @@ import twitter4j.*;
 import java.util.*;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.configuration.ConfigurationException;
 
 public class TwitterBot {
 
-    private static Date lastUpdate;
     static final Logger log = Logger.getLogger(TwitterBot.class);
+    private static Date lastUpdate;
     private static String twitterUser;
     private static String twitterPassword;
+    private static String cfgFile;
+    private static Config cfg;
 
-
-    public static void main(String[] args) throws TwitterException {
+    public static void main(String[] args) {
         init(args);
 
-        Twitter twitter = new Twitter(twitterUser, twitterPassword);
-        twitter.setSource("web");
-        User user = twitter.getUserDetail(twitterUser);
-        lastUpdate = user.getStatusCreatedAt();
+        // XXX TODO: should use lastUpdated from cfg-fiel to search SINCE in all searches.
+        try {
+            cfg = new Config(cfgFile);
+            //cfg.update();
+            twitterUser = cfg.twitterUser;
+            twitterPassword = cfg.twitterPassword;
 
-        if (lastUpdate == null) {
-            lastUpdate = new Date(0L);
+            Twitter twitter = new Twitter(twitterUser, twitterPassword);
+            twitter.setSource("web");
+            User user = twitter.getUserDetail(twitterUser);
+            lastUpdate = user.getStatusCreatedAt();
+            if (lastUpdate == null) {
+                lastUpdate = new Date(0L);
+            }
+
+            log.info("STARTING BOT");
+            log.info("Looking for entries newer than " + lastUpdate + " for " + twitterUser);
+
+
+            callTwitter(twitter);
+
+            cfg.update(lastUpdate);
+            log.info("Latest status is now: " + lastUpdate);
+        }
+        catch (ConfigurationException e) {
+            log.fatal("config not loaded for file: " + cfgFile, e);
+            System.exit(3);
+        }
+        catch (TwitterException e) {
+            log.fatal("TwitterException caught: ", e);
+            System.exit(4);
         }
 
-        log.info("STARTING BOT");
-//        log.info(twitter);
-//        log.info(user);
-//        log.info(PrintUtil.print(user));
-        log.info("Looking for entries newer than " + lastUpdate + " for " + twitterUser);
+    }
 
-
+    private static void callTwitter(Twitter twitter) throws TwitterException {
         retrieveAndPost(twitter);
-        FollowerRetriever followerRetriever = new FollowerRetriever(Config.getFollowerQueries(), twitter);
+        FollowerRetriever followerRetriever = new FollowerRetriever(cfg.getFollowerQueries(), twitter);
         followerRetriever.followNew();
-
-        log.info("Latest status is now: " + lastUpdate);
     }
 
     private static void retrieveAndPost(Twitter twitter) {
         List<Posting> postings = new ArrayList<Posting>();
-        postings.addAll((new RSSRetriever(Config.getFeedUrls())).retrieve());
-        TwitterRetriever tr = new TwitterRetriever(Config.getTwitterQueries(), twitterUser);
+        postings.addAll((new RSSRetriever(cfg.getFeedUrls())).retrieve());
+        TwitterRetriever tr = new TwitterRetriever(cfg.getTwitterQueries(), twitterUser);
         postings.addAll(tr.retrieve());
         Collections.sort(postings);
         // PrintUtil.printPostings(postings);
@@ -73,16 +93,17 @@ public class TwitterBot {
     }
 
     private static void init(String[] args) {
-        if (args.length != 2) {
+        if (args.length == 1) {
+            cfgFile = args[0];
+        }
+        else {
             usage();
             System.exit(2);
         }
-        twitterUser = args[0];
-        twitterPassword = args[1];
     }
 
     private static void usage() {
         System.out.println("Twitter news bot");
-        System.out.println("usage: java no.rodland.twitter.TwitterBot <twitteruser> <twitterpassword>");
+        System.out.println("usage: java no.rodland.twitter.TwitterBot <file.properties>");
     }
 }
