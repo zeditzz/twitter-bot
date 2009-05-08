@@ -37,7 +37,7 @@ public class Follower {
         if (args.length == 3) {
             twitterUser = args[0];
             twitterPassword = args[1];
-            screenNameToFollow = args[3];
+            screenNameToFollow = args[2];
         } else {
             usage();
             System.exit(2);

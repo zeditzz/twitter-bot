@@ -39,7 +39,7 @@ public class FollowerRetriever {
         int numberOfFollowers = followers.size();
         int numberOfFriends = friends.size();
         if (tooMany(numberOfFollowers, numberOfFriends)) {
-            log.info("Following too many already.  not following followers.");
+            log.info("Following too many already.  not following posters.");
             return 0;
         }
         Set<String> alreadyFollowed = new HashSet<String>();

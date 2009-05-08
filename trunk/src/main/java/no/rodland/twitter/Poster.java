@@ -52,7 +52,7 @@ public class Poster {
         } else if (args.length == 3) {
             twitterUser = args[0];
             twitterPassword = args[1];
-            status = args[3];
+            status = args[2];
         } else {
             usage();
             System.exit(2);
