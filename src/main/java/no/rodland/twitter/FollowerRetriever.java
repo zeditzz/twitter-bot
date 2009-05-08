@@ -25,14 +25,21 @@ public class FollowerRetriever {
         List<String> followers = TwitterAPI.getFollowersIDs(twitter);
 
         int numerbNew = (int) ((Config.FOLLOW_FACTOR * followers.size()) - friends.size());
-        log.info("Should be able to follow " + numerbNew + " new followers.");
+        if (numerbNew == 0){
+            log.info("No more room for new friends for now.");
+            return;
+        }
+        else{
+            log.info("Should be able to follow " + numerbNew + " new friends.");
+        }
+
 
         int followedPosters = followPosters(friends, followers);
 
         // check (again) that the limit isn't reached
         int followedFollowers = followFollowers(friends, followers);
 
-        log.info("followed " + followedPosters + " posters and " + followedFollowers + " followers");
+        log.info("followed " + followedPosters + " posters and " + followedFollowers + " friends");
     }
 
     private int followPosters(List<String> friends, List<String> followers) {
