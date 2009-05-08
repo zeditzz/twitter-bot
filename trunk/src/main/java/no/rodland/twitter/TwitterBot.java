@@ -5,13 +5,11 @@ import twitter4j.*;
 import java.util.*;
 
 import org.apache.log4j.Logger;
-import no.rodland.twitter.util.PrintUtil;
-
 
 public class TwitterBot {
 
     private static Date lastUpdate;
-    static Logger log = Logger.getLogger(TwitterBot.class);
+    static final Logger log = Logger.getLogger(TwitterBot.class);
     private static String twitterUser;
     private static String twitterPassword;
 
@@ -55,8 +53,10 @@ public class TwitterBot {
 
     /**
      * Will post entries.  MUST BE SORTED on DATE (newest last) to work properly,.
+     * @param twitter The authenticated twitter.
+     * @param entries The entries to post (given that the date is newer than lastUpdate.
      */
-    public static Date postNewEntries(List<Posting> entries, Twitter twitter) {
+    private static void postNewEntries(List<Posting> entries, Twitter twitter) {
         int droppedOld = 0;
         for (Posting entry : entries) {
             Date published = entry.getUpdated();
@@ -68,10 +68,9 @@ public class TwitterBot {
             }
         }
         log.info("Dropped " + droppedOld + " posting because they were too old");
-        return lastUpdate;
     }
 
-    public static void init(String[] args) {
+    private static void init(String[] args) {
         if (args.length != 2) {
             usage();
             System.exit(2);
@@ -80,7 +79,7 @@ public class TwitterBot {
         twitterPassword = args[1];
     }
 
-    public static void usage() {
+    private static void usage() {
         System.out.println("Twitter news bot");
         System.out.println("usage: java no.rodland.twitter.TwitterBot <twitteruser> <twitterpassword>");
     }

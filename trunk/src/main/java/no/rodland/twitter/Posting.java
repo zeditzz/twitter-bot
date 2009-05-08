@@ -13,12 +13,12 @@ import org.apache.log4j.Logger;
  * Time: 11:32:33 PM
  */
 public class Posting implements Comparable{
-    static Logger log = Logger.getLogger(Posting.class);
+    static final Logger log = Logger.getLogger(Posting.class);
 
-    private Date updated;
-    private String title;
-    private Link link;
-    private String src;
+    private final Date updated;
+    private final String title;
+    private final Link link;
+    private final String src;
 
     public Posting(Date updated, String title, Link link, String src) {
         this.updated = updated;

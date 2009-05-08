@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-public class TwitterRetriever implements PostingRetriever {
-    private static Logger log = Logger.getLogger(TwitterRetriever.class);
-    private List<String> queries;
-    private String twitterUser;
+class TwitterRetriever {
+    private static final Logger log = Logger.getLogger(TwitterRetriever.class);
+    private final List<String> queries;
+    private final String twitterUser;
 
     public TwitterRetriever(List<String> queries, String twitterUser) {
         this.queries = queries;
@@ -19,7 +19,9 @@ public class TwitterRetriever implements PostingRetriever {
     public List<Posting> retrieve() {
         List<Tweet> tweets = TwitterAPI.search(queries, twitterUser);
         tweets = TwitterAPI.filterTweets(tweets, twitterUser);
-        return TwitterAPI.getPostings(tweets);
+        List<Posting> postings =  TwitterAPI.getPostings(tweets);
+        log.info("got " + postings.size() + " twitter-postings");
+        return postings;
     }
 
 }

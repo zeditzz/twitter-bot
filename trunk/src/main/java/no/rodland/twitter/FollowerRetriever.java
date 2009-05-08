@@ -9,8 +9,8 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 
 public class FollowerRetriever {
-    private static Logger log = Logger.getLogger(FollowerRetriever.class);
-    private List<String> queries;
+    private static final Logger log = Logger.getLogger(FollowerRetriever.class);
+    private final List<String> queries;
     private String twitterUser;
     private Twitter twitter;
 
