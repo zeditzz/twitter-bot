@@ -38,7 +38,7 @@ public class ReTwitter {
         if (args.length == 3) {
             twitterUser = args[0];
             twitterPassword = args[1];
-            statusId = args[3];
+            statusId = args[2];
         } else {
             usage();
             System.exit(2);
