@@ -23,71 +23,85 @@ public class FollowerRetriever {
     public void followNew() {
         List<String> friends = TwitterAPI.getFriends(twitter);
         List<String> followers = TwitterAPI.getFollowersIDs(twitter);
-        Set<String> alreadyFollowed = new HashSet<String>();
 
-        // not possible to follow. seems like we're already following them...
-        friends.add("jobbainorge");
+        int numerbNew = (int) ((Config.FOLLOW_FACTOR * followers.size()) - friends.size());
+        log.info("Should be able to follow " + numerbNew + " new followers.");
 
+        int followedPosters = followPosters(friends, followers);
+
+        // check (again) that the limit isn't reached
+        int followedFollowers = followFollowers(friends, followers);
+
+        log.info("followed " + followedPosters + " posters and " + followedFollowers + " followers");
+    }
+
+    private int followPosters(List<String> friends, List<String> followers) {
         int numberOfFollowers = followers.size();
         int numberOfFriends = friends.size();
-
         if (tooMany(numberOfFollowers, numberOfFriends)) {
-            log.info("Following too many allreday.  exiting following..");
-            return;
+            log.info("Following too many already.  not following followers.");
+            return 0;
         }
-
-        int numerbNew = (int) ((Config.FOLLOW_FACTOR * numberOfFollowers) - numberOfFriends);
-        log.info("Should be able to follow " + numerbNew + " new followers...");
-
-        Set<String> potential = getPotentialFollowers();
+        Set<String> alreadyFollowed = new HashSet<String>();
+        Set<String> posters = getPosters();
         int followedPosters = 0;
-        for (String potenitalId : potential) {
-            if (friends.contains(potenitalId)) {
-                alreadyFollowed.add(potenitalId);
-            } else if (okToFollowPoster(followedPosters, numberOfFollowers, numberOfFriends)) {
+        for (String posterId : posters) {
+            if (friends.contains(posterId)) {
+                alreadyFollowed.add(posterId);
+            }
+            else if (okToFollowPoster(followedPosters, numberOfFollowers, numberOfFriends)) {
                 try {
-                    twitter.create(potenitalId);
-                    log.info("followed: " + potenitalId);
+                    twitter.create(posterId);
+                    log.info("followed poster: " + posterId);
                     followedPosters++;
                     numberOfFriends++;
-                    friends.add(potenitalId);
-                } catch (TwitterException e) {
-                    log.error("Error trying to befirend", e);
-                    //e.printStackTrace();
+                    friends.add(posterId);
                 }
-            } else {
-                log.info("already followed to many posters, will not follow now: " + potenitalId);
+                catch (TwitterException e) {
+                    log.error("Error trying to befriend", e);
+                }
+            }
+            else {
+                log.info("already followed to many posters, will not follow now: " + posterId);
             }
         }
 
-        log.info("already following potential posters: " + alreadyFollowed);
+        log.info("already following posters posters: " + alreadyFollowed);
+        return followedPosters;
+    }
 
+    private int followFollowers(List<String> friends, List<String> followers) {
+        int numberOfFollowers = followers.size();
+        int numberOfFriends = friends.size();
         if (tooMany(numberOfFollowers, numberOfFriends)) {
-            log.info("Following too many allreday.  not following followers..");
-            return;
+            log.info("Following too many already.  not following followers.");
+            return 0;
         }
-
+        Set<String> alreadyFollowed = new HashSet<String>();
         alreadyFollowed.clear();
         int followedFollowers = 0;
-        for (String potenitalId : followers) {
-            if (friends.contains(potenitalId)) {
-                alreadyFollowed.add(potenitalId);
-            } else if (okToFollowFollower(followedFollowers, numberOfFollowers, numberOfFriends)) {
-                followedFollowers++;
-                numberOfFriends++;
-                friends.add(potenitalId);
-                log.info("follow follower: " + potenitalId);
+        for (String followerId : followers) {
+            if (friends.contains(followerId)) {
+                alreadyFollowed.add(followerId);
+            }
+            else if (okToFollowFollower(followedFollowers, numberOfFollowers, numberOfFriends)) {
                 try {
-                    twitter.create(potenitalId);
-                } catch (TwitterException e) {
-                    log.error("Error trying to befirend", e);
+                    twitter.create(followerId);
+                    log.info("followed follower: " + followerId);
+                    followedFollowers++;
+                    numberOfFriends++;
+                    friends.add(followerId);
                 }
-            } else {
-                log.info("already followed to many followers, will not follow now: " + potenitalId);
+                catch (TwitterException e) {
+                    log.error("Error trying to befriend", e);
+                }
+            }
+            else {
+                log.info("already followed to many followers, will not follow now: " + followerId);
             }
         }
         log.info("already following potential followers: " + alreadyFollowed);
-        log.info("followed " + followedPosters + " posters and " + followedFollowers + " followers");
+        return followedFollowers;
     }
 
     private boolean okToFollowFollower(int followedFollowers, int numberOfFollowers, int numberOfFriends) {
@@ -102,7 +116,7 @@ public class FollowerRetriever {
         return numberOfFriends > (Config.FOLLOW_FACTOR * numberOfFollowers);
     }
 
-    private Set<String> getPotentialFollowers() {
+    private Set<String> getPosters() {
         Set<String> users = new HashSet<String>();
         List<Tweet> tweets = TwitterAPI.search(queries, twitterUser, Config.TWITTER_FOLLOW_SEARCH_HITS);
         tweets = TwitterAPI.filterTweets(tweets, twitterUser);

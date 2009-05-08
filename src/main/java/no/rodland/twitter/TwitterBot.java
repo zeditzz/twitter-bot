@@ -30,10 +30,10 @@ public class TwitterBot {
         }
 
         log.info("STARTING BOT");
-        log.info(twitter);
-        log.info(user);
-        log.info(PrintUtil.print(user));
-        log.info("Looking for entries newer than " + lastUpdate);
+//        log.info(twitter);
+//        log.info(user);
+//        log.info(PrintUtil.print(user));
+        log.info("Looking for entries newer than " + lastUpdate + " for " + twitterUser);
 
 
         retrieveAndPost(twitter);
