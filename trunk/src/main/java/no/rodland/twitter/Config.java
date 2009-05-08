@@ -1,7 +1,15 @@
 package no.rodland.twitter;
 
+import twitter4j.Twitter;
+
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.log4j.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,6 +18,9 @@ import java.util.ArrayList;
  * Time: 10:55:30 AM
  */
 public class Config {
+    static Logger log = Logger.getLogger(Config.class);
+    private Properties prop = new Properties();
+
     public static final double FOLLOW_FACTOR = 1.2;
     public static final int DEFAULT_TWITTER_HITS = 30;
     public static final int TWITTER_FOLLOW_SEARCH_HITS = 50;
@@ -19,9 +30,25 @@ public class Config {
     public static final int TWITTER_MSG_LENGTH = 140;
     public static final int MIN_TITLE_LENGTH = 15;
 
+
+    public Config(String fileName) {
+        log.info("Loading properties from " + fileName);
+        try {
+            prop.load(new FileInputStream(fileName));
+        } catch (IOException ex) {
+            log.error("Configuration file not found:" + ex.getMessage());
+            System.exit(-1);
+        }
+        //this.twitter = new Twitter(prop.getProperty("id"), prop.getProperty("password"));
+        //this.feedurl = prop.getProperty("feedurl");
+        //this.lastUpdate = new Date(Long.valueOf(prop.getProperty("lastUpdate", "0")));
+
+    }
+
     static List<String> getTwitterQueries() {
         List<String> queries = new ArrayList<String>();
         queries.add("schibsted");
+        queries.add("schibsteds");
         queries.add("finn.no");
         queries.add("nettby");
         queries.add("finn_no");
