@@ -14,7 +14,6 @@ public class TwitterBot {
     private static String twitterPassword;
 
 
-
     public static void main(String[] args) throws TwitterException {
         init(args);
 
@@ -51,8 +50,10 @@ public class TwitterBot {
         postNewEntries(postings, twitter);
     }
 
+
     /**
      * Will post entries.  MUST BE SORTED on DATE (newest last) to work properly,.
+     *
      * @param twitter The authenticated twitter.
      * @param entries The entries to post (given that the date is newer than lastUpdate.
      */
@@ -63,7 +64,8 @@ public class TwitterBot {
             if (lastUpdate.before(published)) {
                 lastUpdate = published;
                 TwitterAPI.post(twitter, entry);
-            } else {
+            }
+            else {
                 droppedOld++;
             }
         }

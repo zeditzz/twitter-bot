@@ -12,8 +12,8 @@ import org.apache.log4j.Logger;
  * Date: Apr 29, 2009
  * Time: 11:32:33 PM
  */
-public class Posting implements Comparable{
-    static final Logger log = Logger.getLogger(Posting.class);
+public class Posting implements Comparable<Posting>{
+    private static final Logger log = Logger.getLogger(Posting.class);
 
     private final Date updated;
     private final String title;
@@ -54,11 +54,6 @@ public class Posting implements Comparable{
         return src;
     }
 
-    public int compareTo(Object o) {
-        Posting posting = (Posting)o;
-        return getUpdated().compareTo(posting.getUpdated());
-    }
-
     static String formatStatus(String title, String link) {
         String status = title + ": " + link;
         //title = title.replaceAll("b", "");
@@ -90,5 +85,9 @@ public class Posting implements Comparable{
                 ", link=" + link +
                 ", src='" + src + '\'' +
                 '}';
+    }
+
+    public int compareTo(Posting p) {
+        return getUpdated().compareTo(p.getUpdated());
     }
 }
