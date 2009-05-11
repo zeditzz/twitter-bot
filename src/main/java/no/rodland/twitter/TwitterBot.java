@@ -16,8 +16,8 @@ public class TwitterBot {
     private static Config cfg;
 
     public static void main(String[] args) {
-        init(args);
         log.info("STARTING BOT");
+        init(args);
 
         // XXX TODO: should use lastUpdated from cfg-fiel to search SINCE in all searches.
         try {
