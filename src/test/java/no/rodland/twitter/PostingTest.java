@@ -40,6 +40,13 @@ public class PostingTest {
     public void testFormat(){
         Assert.assertEquals("heisan: hoppsan", Posting.formatStatus("heisan", "hoppsan"));
     }
+    @Test
+    public void testMath(){
+        int numerbNew =(int)Math.ceil((1.2d * 63) - 70);
+        System.out.println("numerbNew = " + numerbNew);
+    }
+
+
 
 }
 

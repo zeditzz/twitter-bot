@@ -86,8 +86,8 @@ public class TwitterAPI {
         return returnList;
     }
 
-    static List<Tweet> search(List<String> queries, String twitterUser) {
-        return search(queries, twitterUser, Config.DEFAULT_TWITTER_HITS);
+    static List<Tweet> search(List<String> queries, String twitterUser, Config cfg) {
+        return search(queries, twitterUser, cfg.getTwitterHits());
     }
 
     static List<Tweet> search(List<String> queries, String excludedTwitterUser, int hits) {

@@ -54,7 +54,7 @@ public class TwitterUtil {
         System.out.println("FRIENDS: " + twitter.getFriends());
         System.out.println("FOLLOW: " + twitter.getFollowers());
 
-        // XXX to follow
+        // to follow
         //System.out.println(twitter.create("fredrikr"));
 
     }

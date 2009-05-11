@@ -28,7 +28,7 @@ public class Poster {
     }
 
     private static void post(String status) throws TwitterException {
-        if (status.length() > Config.TWITTER_MSG_LENGTH) {
+        if (status.length() > 140) {
             log.error("Status must not exceed 140 characters. Will exit because it's " + status.length());
         } else {
             Twitter tw = getTwitter();
