@@ -144,7 +144,7 @@ class FollowerRetriever {
         List<Tweet> tweets = TwitterAPI.search(queries, twitterUser, cfg.getFollowerHits());
         tweets = TwitterAPI.filterTweets(tweets, twitterUser);
         for (Tweet tweet : tweets) {
-            users.add(tweet.getFromUser());
+            users.add(tweet.getFromUser().toLowerCase());
         }
         return users;
     }
