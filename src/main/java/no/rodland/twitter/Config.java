@@ -99,15 +99,15 @@ public class Config {
         List queries = config.getList(CFG_KEY_RSS_QUERY);
         List sites = config.getList(CFG_KEY_SITES);
         List<FeedUrl> myList = new ArrayList<FeedUrl>();
+        for (Object url : urls) {
+            String site = ((String) url).replaceAll("NUMBER_NEWS", Integer.toString(getNumberNews()));
+            myList.add(new FeedUrl(site));
+        }
         for (Object siteObj : sites) {
             String site = ((String) siteObj).replaceAll("NUMBER_NEWS", Integer.toString(getNumberNews()));
             for (Object query : queries) {
                 myList.add(new FeedUrl(site, (String) query));
             }
-        }
-        for (Object url : urls) {
-            String site = ((String) url).replaceAll("NUMBER_NEWS", Integer.toString(getNumberNews()));
-            myList.add(new FeedUrl(site));
         }
         return myList;
     }
