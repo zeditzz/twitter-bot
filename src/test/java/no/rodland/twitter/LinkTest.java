@@ -8,22 +8,23 @@ import junit.framework.Assert;
  * User: fmr
  * Date: Apr 29, 2009
  * Time: 10:02:37 PM
- * To change this template use File | Settings | File Templates.
  */
 public class LinkTest {
 
     @Test
     public void testSimplify() {
         Assert.assertEquals("https://rodland.no", Link.simplify("http://google.com/redirectto?url=https://rodland.no&heisan=hoppsan&ID=dhsjkhdkjshdui&hei=hopp"));
-
     }
+
+    @Test
+    public void testSimplifyLastSlash() {
+        Assert.assertEquals("https://rodland.no", Link.simplify("http://google.com/redirectto?url=https://rodland.no/"));
+    }
+
     @Test
     public void testSimplifyYahoo() {
         Assert.assertEquals("http://www.chicoer.com/ci_12122084?source=rss", Link.simplify("http://us.rd.yahoo.com/dailynews/rss/search/schibsted/SIG=11h4ig1ld/*http%3A//www.chicoer.com/ci_12122084?source=rss"));
-
     }
-
-
 
     @Test
     public void testRemoveParamsSame() {
@@ -40,6 +41,7 @@ public class LinkTest {
     public void testRemoveParams() {
         Assert.assertEquals("https://rodland.no", Link.removeParams("https://rodland.no&heisan=hoppsan"));
     }
+
     @Test
     public void testRemoveParamsMultiple() {
         Assert.assertEquals("https://rodland.no", Link.removeParams("https://rodland.no&heisan=hoppsan&ID=dhsjkhdkjshdui&hei=hopp"));
@@ -49,9 +51,6 @@ public class LinkTest {
     public void testRemoveMulitpleUrlsHttps() {
         Assert.assertEquals("https://vg.no", Link.removeMulitpleUrls("https://rodland.nohttps://vg.no"));
     }
-
-
-
 
     @Test
     public void testRemoveMulitpleUrlsNull() {
@@ -76,7 +75,6 @@ public class LinkTest {
     @Test
     public void testRemoveMulitpleUrls3Http() {
         Assert.assertEquals("http://vg.no", Link.removeMulitpleUrls("http://sesam.no/http://rodland.nohttp://vg.no"));
-
     }
 
     @Test
@@ -99,4 +97,9 @@ public class LinkTest {
         Assert.assertEquals(url, Link.removeParams(url));
     }
 
+    @Test
+    public void testRemoveLastSlash() {
+        Assert.assertEquals("https://rodland.no", Link.removeLastSlash("https://rodland.no/"));
+        Assert.assertEquals("http://rodland.no", Link.removeLastSlash("http://rodland.no/"));
+    }
 }

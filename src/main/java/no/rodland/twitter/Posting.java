@@ -3,16 +3,22 @@ package no.rodland.twitter;
 import com.sun.syndication.feed.synd.SyndEntry;
 
 import java.util.Date;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
+import twitter4j.Status;
+import twitter4j.Tweet;
 
 /**
+ * Note: this class has a natural ordering that is inconsistent with equals.
+ * <p/>
  * Created by IntelliJ IDEA.
  * User: fmr
  * Date: Apr 29, 2009
  * Time: 11:32:33 PM
  */
-public class Posting implements Comparable<Posting>{
+public class Posting implements Comparable<Posting> {
     private static final Logger log = Logger.getLogger(Posting.class);
 
     private final Date updated;
@@ -22,6 +28,7 @@ public class Posting implements Comparable<Posting>{
     // XXX: replace with values from Config without making it very dependent
     private static final int maxMsgLength = 140;
     private static final int minTitleLength = 15;
+    private static final Pattern TITLE_WITH_URL = Pattern.compile("(.*)(https?://[^ ]*) *$");
 
     public Posting(Date updated, String title, Link link, String src) {
         this.updated = updated;
@@ -37,6 +44,21 @@ public class Posting implements Comparable<Posting>{
         this.src = src;
     }
 
+    public Posting(Date updated, String title, String src) {
+        this.updated = updated;
+        this.title = extractTitle(title);
+        this.link = extractLink(title);
+        this.src = src;
+    }
+
+    public Posting(Status status) {
+        this(status.getCreatedAt(), getTitle(status), "Twitter: @" + status.getUser().getScreenName() + " (" + status.getId() + ")");
+    }
+
+    public Posting(Tweet tweet) {
+        this(tweet.getCreatedAt(), getTitle(tweet), "Twitter: @" + tweet.getFromUser() + " (" + tweet.getId() + ")");
+    }
+
     public Date getUpdated() {
         return updated;
     }
@@ -46,7 +68,7 @@ public class Posting implements Comparable<Posting>{
     }
 
     public String getUrl() {
-        if (link == null){
+        if (link == null) {
             log.info("no link for posting: " + this);
             return "";
         }
@@ -57,26 +79,73 @@ public class Posting implements Comparable<Posting>{
         return src;
     }
 
-    static String formatStatus(String title, String link) {
-        String status = title + ": " + link;
+    public String getStatus() {
+        String url = link.getLink();
+        String status = title + ": " + url;
         if (status.length() > maxMsgLength) {
-            if (link.length() < maxMsgLength) {
-                int end = title.length() - (status.length() - (maxMsgLength- 3));
+            if (url.length() < maxMsgLength) {
+                int end = title.length() - (status.length() - (maxMsgLength - 3));
                 if (end > minTitleLength) {
                     status = title.substring(0, end) + "...";
-                    status += "".equals(link) ? "" :  ": " + link;
-                } else {
+                    status += "".equals(url) ? "" : ": " + url;
+                }
+                else {
                     status = title;
                 }
-            } else {
+            }
+            else {
                 if (title.length() > maxMsgLength) {
                     status = title.substring(0, maxMsgLength);
-                } else {
+                }
+                else {
                     status = title;
                 }
             }
         }
+        // this should not happen - too often that is....
+        if (status.length() > 140) {
+            log.error("status longer than 140: " + status);
+            status = status.substring(0, 139);
+        }
         return status;
+    }
+
+    public int compareTo(Posting p) {
+        return getUpdated().compareTo(p.getUpdated());
+    }
+
+    private static String getTitle(Tweet tweet) {
+        return getReTweetTitle(tweet.getFromUser(), tweet.getText());
+    }
+
+    private static String getTitle(Status status) {
+        return getReTweetTitle(status.getUser().getScreenName(), status.getText());
+    }
+
+    private static String getReTweetTitle(String fromUser, String text) {
+        return "RT @" + fromUser + ": " + text;
+    }
+
+    public String extractTitle(String origTitle) {
+        if (origTitle == null) {
+            return null;
+        }
+        Matcher m = TITLE_WITH_URL.matcher(origTitle);
+        if (m.matches()) {
+            return m.group(1);
+        }
+        return origTitle;
+    }
+
+    public Link extractLink(String origTitle) {
+        if (origTitle == null) {
+            return null;
+        }
+        Matcher m = TITLE_WITH_URL.matcher(origTitle);
+        if (m.matches()) {
+            return new Link(m.group(2));
+        }
+        return null;
     }
 
     @Override
@@ -87,9 +156,5 @@ public class Posting implements Comparable<Posting>{
                 ", link=" + link +
                 ", src='" + src + '\'' +
                 '}';
-    }
-
-    public int compareTo(Posting p) {
-        return getUpdated().compareTo(p.getUpdated());
     }
 }

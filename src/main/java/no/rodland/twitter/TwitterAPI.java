@@ -11,26 +11,6 @@ import org.apache.log4j.Logger;
 public class TwitterAPI {
     private static final Logger log = Logger.getLogger(TwitterAPI.class);
 
-    private static Posting getPosting(Status status) {
-        return new Posting(status.getCreatedAt(), getTitle(status), null, "Twitter: @" + status.getUser().getScreenName() + " (" + status.getId() + ")");
-    }
-
-    private static Posting getPosting(Tweet tweet) {
-        return new Posting(tweet.getCreatedAt(), getTitle(tweet), null, "Twitter: @" + tweet.getFromUser() + " (" + tweet.getId() + ")");
-    }
-
-    private static String getTitle(Tweet tweet) {
-        return getTitle(tweet.getFromUser(), tweet.getText());
-    }
-
-    private static String getTitle(Status status) {
-        return getTitle(status.getUser().getScreenName(), status.getText());
-    }
-
-    private static String getTitle(String fromUser, String text) {
-        return "RT @" + fromUser + ": " + text;
-    }
-
     public static String getSearchStringExcludingUser(List<String> queries, String twitterUser) {
         if (queries == null || queries.size() == 0) {
             return "";
@@ -53,7 +33,7 @@ public class TwitterAPI {
     private static Posting getPosting(long tweetId) throws TwitterException {
         Twitter anonTwitter = new Twitter();
         Status status = anonTwitter.show(tweetId);
-        return getPosting(status);
+        return new Posting(status);
     }
 
     public static List<String> getFriends(Twitter twitter) {
@@ -61,11 +41,12 @@ public class TwitterAPI {
         try {
             List<User> users = twitter.getFriends();
             log.info(twitter.verifyCredentials().getScreenName() + " has " + users.size() + " friends.");
-            // Must be a better way (but Array.asList does not seem to work for primitives
+            // Must be a better way (but Array.asList does not seem to work for primitives)
             for (User user : users) {
                 returnList.add(user.getScreenName().toLowerCase());
             }
-        } catch (TwitterException e) {
+        }
+        catch (TwitterException e) {
             log.error("Exception when searching twitter", e);
         }
         return returnList;
@@ -80,7 +61,8 @@ public class TwitterAPI {
             for (User user : users) {
                 returnList.add(user.getScreenName().toLowerCase());
             }
-        } catch (TwitterException e) {
+        }
+        catch (TwitterException e) {
             log.error("Exception when searching twitter", e);
         }
         return returnList;
@@ -99,7 +81,8 @@ public class TwitterAPI {
             result = anonTwitter.search(query);
             log.info("Got " + result.getTweets().size() + " results from twitter (took " + result.getCompletedIn() + "ms)");
             log.info("...for query: " + result.getQuery());
-        } catch (TwitterException e) {
+        }
+        catch (TwitterException e) {
             log.error("Exception when searching twitter", e);
         }
         if (result != null) {
@@ -111,7 +94,7 @@ public class TwitterAPI {
     static List<Posting> getPostings(List<Tweet> tweets) {
         List<Posting> postings = new ArrayList<Posting>();
         for (Tweet tweet : tweets) {
-            postings.add(getPosting(tweet));
+            postings.add(new Posting(tweet));
         }
         return postings;
     }
@@ -122,7 +105,8 @@ public class TwitterAPI {
         for (Tweet tweet : tweets) {
             if (twitterUser.equals(tweet.getFromUser())) {
                 droppedOwn++;
-            } else {
+            }
+            else {
                 filteredTweets.add(tweet);
             }
         }
@@ -133,23 +117,23 @@ public class TwitterAPI {
     }
 
     static void post(Twitter twitter, Posting entry) {
-        String title = entry.getTitle();
-        String link = entry.getUrl();
+        //String title = entry.getTitle();
+        //String link = entry.getUrl();
+        String status = entry.getStatus();
+        log.info("New entry published at " + entry.getUpdated());
+        log.info("  status: " + entry.getStatus());
+        log.info("  src: " + entry.getSrc());
 
-        TwitterBot.log.info("New entry " + title + " published at " + entry.getUpdated());
-        TwitterBot.log.info("           link: " + link);
-        TwitterBot.log.info("           src: " + entry.getSrc());
-
-        String status = Posting.formatStatus(title, link);
-        TwitterBot.log.info("Updating Twitter: " + status);
+        log.info("Updating Twitter: " + status);
         if (status.length() > 140) {
-            TwitterBot.log.error("status longer than 140: " + status);
+            log.error("status longer than 140: " + status);
         }
 
         try {
             twitter.update(status);
-        } catch (TwitterException e) {
-            TwitterBot.log.error("Exception when posting update", e);
+        }
+        catch (TwitterException e) {
+            log.error("Exception when posting update", e);
         }
     }
 

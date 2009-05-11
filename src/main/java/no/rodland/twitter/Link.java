@@ -17,6 +17,7 @@ public class Link {
 
     private final String origLink;
     private final String simplified;
+    private static final String SLASH = "/";
 
     public Link(String origLink) {
         this.origLink = origLink;
@@ -31,7 +32,15 @@ public class Link {
         String retString = fixFunnyHttp(origLink);
         retString = removeMulitpleUrls(retString);
         retString = removeParams(retString);
+        retString = removeLastSlash(retString);
 
+        return retString;
+    }
+
+    public static String removeLastSlash(String retString) {
+        if (retString.lastIndexOf(SLASH) == (retString.length() - 1)) {
+            return retString.substring(0, (retString.length() - 1));
+        }
         return retString;
     }
 
@@ -68,17 +77,4 @@ public class Link {
         }
         return url;
     }
-
-
-//    m = endUrlRegexp.matcher(link);
-//
-//    if (m.matches()){
-//        String tmpLink = m.group(1);
-//        log.info(link + " replaced with " + tmpLink);
-//
-//        link = tmpLink;
-//    }
-//
-
-
 }

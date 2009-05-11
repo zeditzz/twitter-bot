@@ -33,7 +33,7 @@ public class ReTwitter {
         }
     }
 
-
+                             
     private static void init(String[] args) {
         if (args.length == 3) {
             twitterUser = args[0];
