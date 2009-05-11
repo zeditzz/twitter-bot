@@ -15,8 +15,8 @@ public class Link {
     private static final String FUNNY_HTTP = "http%3A";
     private static final String NORMAL_HTTP = "http:";
 
-    final String origLink;
-    final String simplified;
+    private final String origLink;
+    private final String simplified;
 
     public Link(String origLink) {
         this.origLink = origLink;

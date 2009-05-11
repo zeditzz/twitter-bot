@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  * Time: 10:51:26 AM
  */
 public class Follower {
-    static final Logger log = Logger.getLogger(Follower.class);
+    private static final Logger log = Logger.getLogger(Follower.class);
     private static String twitterUser;
     private static String twitterPassword;
     private static String screenNameToFollow;
@@ -33,7 +33,7 @@ public class Follower {
         }
     }
 
-    public static void init(String[] args) {
+    private static void init(String[] args) {
         if (args.length == 3) {
             twitterUser = args[0];
             twitterPassword = args[1];
@@ -44,7 +44,7 @@ public class Follower {
         }
     }
 
-    public static void usage() {
+    private static void usage() {
         System.out.println("Twitter poster");
         System.out.println("usage 2: java no.rodland.twitter.ReTwitter <twitteruser> <twitterpassword> <scrrenname-to-follow>");
     }

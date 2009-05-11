@@ -20,8 +20,8 @@ public class Posting implements Comparable<Posting>{
     private final Link link;
     private final String src;
     // XXX: replace with values from Config without making it very dependent
-    private static int maxMsgLength = 140;
-    private static int minTitleLength = 15;
+    private static final int maxMsgLength = 140;
+    private static final int minTitleLength = 15;
 
     public Posting(Date updated, String title, Link link, String src) {
         this.updated = updated;

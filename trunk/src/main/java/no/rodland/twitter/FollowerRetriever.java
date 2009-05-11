@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 class FollowerRetriever {
     private static final Logger log = Logger.getLogger(FollowerRetriever.class);
     private final List<String> queries;
-    private Config cfg;
+    private final Config cfg;
     private String twitterUser;
     private Twitter twitter;
 

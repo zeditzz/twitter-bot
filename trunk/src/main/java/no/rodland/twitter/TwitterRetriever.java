@@ -10,7 +10,7 @@ class TwitterRetriever {
     private static final Logger log = Logger.getLogger(TwitterRetriever.class);
     private final List<String> queries;
     private final String twitterUser;
-    private Config cfg;
+    private final Config cfg;
 
     public TwitterRetriever(List<String> queries, String twitterUser, Config cfg) {
         this.queries = queries;

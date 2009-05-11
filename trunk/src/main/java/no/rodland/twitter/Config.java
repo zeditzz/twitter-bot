@@ -25,18 +25,18 @@ public class Config {
 //    public static final int TWITTER_MSG_LENGTH = 140;
 //    public static final int MIN_TITLE_LENGTH = 15;
 
-    public static final String CFG_KEY_TWITTERUSER = "twitteruser";
-    public static final String CFG_KEY_TWITTERPASSWORD = "twitterpassword";
-    public static final String CFG_KEY_TWITTER_QUERY = "twitterquery";
-    public static final String CFG_KEY_FOLLOWER_QUERY = "followerquery";
-    public static final String CFG_KEY_RSS_QUERY = "rssquery";
+    private static final String CFG_KEY_TWITTERUSER = "twitteruser";
+    private static final String CFG_KEY_TWITTERPASSWORD = "twitterpassword";
+    private static final String CFG_KEY_TWITTER_QUERY = "twitterquery";
+    private static final String CFG_KEY_FOLLOWER_QUERY = "followerquery";
+    private static final String CFG_KEY_RSS_QUERY = "rssquery";
     private static final String CFG_KEY_SITES = "sites";
     private static final String CFG_KEY_BLACKLIST = "blacklist";
 
     public String twitterUser;
     public String twitterPassword;
 
-    PropertiesConfiguration config;
+    private PropertiesConfiguration config;
     private static final String CFG_KEY_LASTUPDATED = "lastupdated";
     private static final String CFG_KEY_URLS = "urls";
 
@@ -132,7 +132,7 @@ public class Config {
         return config.getInt("TWITTER_FOLLOW_SEARCH_HITS", 20);
     }
 
-    public int getNumberNews() {
+    int getNumberNews() {
         return config.getInt("NUMBER_NEWS", 10);
     }
 
