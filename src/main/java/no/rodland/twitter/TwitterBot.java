@@ -10,7 +10,7 @@ import org.apache.commons.configuration.ConfigurationException;
 public class TwitterBot {
 
     static final Logger log = Logger.getLogger(TwitterBot.class);
-    private static Date lastUpdate;
+    //private static Date lastUpdate;
     private static String twitterUser;
     private static String cfgFile;
     private static Config cfg;
@@ -24,19 +24,24 @@ public class TwitterBot {
             //cfg.update();
             twitterUser = cfg.twitterUser;
             String twitterPassword = cfg.twitterPassword;
-
+            Date cfgLastUpdate = cfg.getLastUpdated();
             Twitter twitter = new Twitter(twitterUser, twitterPassword);
             twitter.setSource("web");
             User user = twitter.getUserDetail(twitterUser);
-            lastUpdate = user.getStatusCreatedAt();
+            Date lastUpdate = user.getStatusCreatedAt();
             if (lastUpdate == null) {
                 lastUpdate = new Date(0L);
+            }
+
+            if (lastUpdate.before(cfgLastUpdate)) {
+                log.info("lastUpdate = " + lastUpdate + ", cfgLastUpdate = " + cfgLastUpdate);
+                lastUpdate = cfgLastUpdate;
             }
 
             log.info("STARTING BOT");
             log.info("Looking for entries newer than " + lastUpdate + " for " + twitterUser);
 
-            callTwitter(twitter);
+            lastUpdate = callTwitter(twitter, lastUpdate);
 
             cfg.update(lastUpdate);
             log.info("Latest status is now: " + lastUpdate);
@@ -51,34 +56,32 @@ public class TwitterBot {
         }
     }
 
-    private static void callTwitter(Twitter twitter) throws TwitterException {
-        retrieveAndPost(twitter);
+    private static Date callTwitter(Twitter twitter, Date lastUpdate) throws TwitterException {
+        Date lastPublished = retrieveAndPost(twitter, lastUpdate);
         FollowerRetriever followerRetriever = new FollowerRetriever(cfg.getFollowerQueries(), twitter);
         followerRetriever.followNew();
+        return lastPublished;
     }
 
-    private static void retrieveAndPost(Twitter twitter) {
+    private static Date retrieveAndPost(Twitter twitter, Date lastUpdate) {
         List<Posting> postings = new ArrayList<Posting>();
         postings.addAll((new RSSRetriever(cfg.getFeedUrls())).retrieve());
         TwitterRetriever tr = new TwitterRetriever(cfg.getTwitterQueries(), twitterUser);
         postings.addAll(tr.retrieve());
         Collections.sort(postings);
-        // PrintUtil.printPostings(postings);
-        postNewEntries(postings, twitter);
+        return postNewEntries(postings, twitter, lastUpdate);
     }
 
 
-    /**
-     * Will post entries.  MUST BE SORTED on DATE (newest last) to work properly,.
-     *
-     * @param twitter The authenticated twitter.
-     * @param entries The entries to post (given that the date is newer than lastUpdate.
-     */
-    private static void postNewEntries(List<Posting> entries, Twitter twitter) {
+    private static Date postNewEntries(List<Posting> entries, Twitter twitter, Date lastUpdate) {
         int droppedOld = 0;
+        Date lastPublished = lastUpdate;
         for (Posting entry : entries) {
             Date published = entry.getUpdated();
-            if (lastUpdate.before(published)) {
+            if (lastUpdate.before(published)) {   // post ALL entries newer than lastPublished
+                if (lastPublished.before(published)) {  // only update lastPublished if it's the newest
+                    lastPublished = published;
+                }
                 lastUpdate = published;
                 TwitterAPI.post(twitter, entry);
             }
@@ -87,6 +90,7 @@ public class TwitterBot {
             }
         }
         log.info("Dropped " + droppedOld + " posting because they were too old");
+        return lastPublished;
     }
 
     private static void init(String[] args) {

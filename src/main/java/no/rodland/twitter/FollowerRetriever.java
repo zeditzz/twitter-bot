@@ -25,11 +25,15 @@ class FollowerRetriever {
         List<String> followers = TwitterAPI.getFollowersIDs(twitter);
 
         int numerbNew = (int) ((Config.FOLLOW_FACTOR * followers.size()) - friends.size());
-        if (numerbNew == 0){
+        if (numerbNew < 1) {
             log.info("No more room for new friends for now.");
             return;
         }
-        else{
+        else if (friends.size() == 0) {
+            log.warn("no friends - hhu. don't think so.. exiting ");
+            return;
+        }
+        else {
             log.info("Should be able to follow " + numerbNew + " new friends.");
         }
 
