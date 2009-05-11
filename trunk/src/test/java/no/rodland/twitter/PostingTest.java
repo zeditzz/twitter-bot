@@ -117,7 +117,7 @@ public class PostingTest {
     public void testLongReTweet() {
         String orig = "RT @" + "fredrikr" + ": stusser veldig over utviklingen til sesam. vet at sesam har sparka selgerne, men nå sparka de jaggu designen også: ";
         String withLink = orig + "http://sesam.no/";
-        String expected = "RT @fredrikr: stusser veldig over utviklingen til sesam. vet at sesam har sparka selgerne, men nå sparka de jaggu desig...: http://sesam.no/";
+        String expected = "RT @fredrikr: stusser veldig over utviklingen til sesam. vet at sesam har sparka selgerne, men nå sparka de jaggu design...: http://sesam.no";
         Posting p = new Posting(new Date(), withLink, "SRC");
         //Assert.assertEquals("http://sesam.no/", p.getUrl());
         //Assert.assertEquals(orig, p.getTitle());
