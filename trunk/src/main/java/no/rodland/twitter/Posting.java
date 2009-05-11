@@ -19,6 +19,9 @@ public class Posting implements Comparable<Posting>{
     private final String title;
     private final Link link;
     private final String src;
+    // XXX: replace with values from Config without making it very dependent
+    private static int maxMsgLength = 140;
+    private static int minTitleLength = 15;
 
     public Posting(Date updated, String title, Link link, String src) {
         this.updated = updated;
@@ -56,19 +59,18 @@ public class Posting implements Comparable<Posting>{
 
     static String formatStatus(String title, String link) {
         String status = title + ": " + link;
-        //title = title.replaceAll("b", "");
-        if (status.length() > Config.TWITTER_MSG_LENGTH) {
-            if (link.length() < Config.TWITTER_MSG_LENGTH) {
-                int end = title.length() - (status.length() - (Config.TWITTER_MSG_LENGTH - 3));
-                if (end > Config.MIN_TITLE_LENGTH) {
+        if (status.length() > maxMsgLength) {
+            if (link.length() < maxMsgLength) {
+                int end = title.length() - (status.length() - (maxMsgLength- 3));
+                if (end > minTitleLength) {
                     status = title.substring(0, end) + "...";
                     status += "".equals(link) ? "" :  ": " + link;
                 } else {
                     status = title;
                 }
             } else {
-                if (title.length() > Config.TWITTER_MSG_LENGTH) {
-                    status = title.substring(0, Config.TWITTER_MSG_LENGTH);
+                if (title.length() > maxMsgLength) {
+                    status = title.substring(0, maxMsgLength);
                 } else {
                     status = title;
                 }

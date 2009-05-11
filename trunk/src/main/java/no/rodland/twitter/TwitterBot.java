@@ -58,7 +58,7 @@ public class TwitterBot {
 
     private static Date callTwitter(Twitter twitter, Date lastUpdate) throws TwitterException {
         Date lastPublished = retrieveAndPost(twitter, lastUpdate);
-        FollowerRetriever followerRetriever = new FollowerRetriever(cfg.getFollowerQueries(), twitter);
+        FollowerRetriever followerRetriever = new FollowerRetriever(twitter, cfg);
         followerRetriever.followNew();
         return lastPublished;
     }
@@ -66,7 +66,7 @@ public class TwitterBot {
     private static Date retrieveAndPost(Twitter twitter, Date lastUpdate) {
         List<Posting> postings = new ArrayList<Posting>();
         postings.addAll((new RSSRetriever(cfg.getFeedUrls())).retrieve());
-        TwitterRetriever tr = new TwitterRetriever(cfg.getTwitterQueries(), twitterUser);
+        TwitterRetriever tr = new TwitterRetriever(cfg.getTwitterQueries(), twitterUser, cfg);
         postings.addAll(tr.retrieve());
         Collections.sort(postings);
         return postNewEntries(postings, twitter, lastUpdate);

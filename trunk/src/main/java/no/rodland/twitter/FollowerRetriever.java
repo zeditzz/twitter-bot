@@ -11,11 +11,13 @@ import org.apache.log4j.Logger;
 class FollowerRetriever {
     private static final Logger log = Logger.getLogger(FollowerRetriever.class);
     private final List<String> queries;
+    private Config cfg;
     private String twitterUser;
     private Twitter twitter;
 
-    public FollowerRetriever(List<String> queries, Twitter twitter) throws TwitterException {
-        this.queries = queries;
+    public FollowerRetriever(Twitter twitter, Config cfg) throws TwitterException {
+        this.queries = cfg.getFollowerQueries();
+        this.cfg = cfg;
         this.twitterUser = twitter.verifyCredentials().getScreenName();
         this.twitter = twitter;
     }
@@ -24,7 +26,7 @@ class FollowerRetriever {
         List<String> friends = TwitterAPI.getFriends(twitter);
         List<String> followers = TwitterAPI.getFollowersIDs(twitter);
 
-        int numerbNew = (int) ((Config.FOLLOW_FACTOR * followers.size()) - friends.size());
+        int numerbNew = (int) Math.ceil((cfg.getFollowFactor() * followers.size()) - friends.size());
         if (numerbNew < 1) {
             log.info("No more room for new friends for now.");
             return;
@@ -59,6 +61,9 @@ class FollowerRetriever {
         for (String posterId : posters) {
             if (friends.contains(posterId)) {
                 alreadyFollowed.add(posterId);
+            }
+            else if (cfg.isBlacklisted(posterId)) {
+                log.info(posterId + " is blacklisted, will not follow.");
             }
             else if (okToFollowPoster(followedPosters, numberOfFollowers, numberOfFriends)) {
                 try {
@@ -97,6 +102,9 @@ class FollowerRetriever {
             if (friends.contains(followerId)) {
                 alreadyFollowed.add(followerId);
             }
+            else if (cfg.isBlacklisted(followerId)) {
+                log.info(followerId + " is blacklisted, will not follow.");
+            }
             else if (okToFollowFollower(followedFollowers, numberOfFollowers, numberOfFriends)) {
                 try {
                     twitter.create(followerId);
@@ -120,20 +128,20 @@ class FollowerRetriever {
     }
 
     private boolean okToFollowFollower(int followedFollowers, int numberOfFollowers, int numberOfFriends) {
-        return !tooMany(numberOfFollowers, numberOfFriends) && (followedFollowers < Config.MAX_FOLLOWERS);
+        return !tooMany(numberOfFollowers, numberOfFriends) && (followedFollowers < cfg.getMaxFollowers());
     }
 
     private boolean okToFollowPoster(int followedPosters, int numberOfFollowers, int numberOfFriends) {
-        return !tooMany(numberOfFollowers, numberOfFriends) && (followedPosters < Config.MAX_POSTERS);
+        return !tooMany(numberOfFollowers, numberOfFriends) && (followedPosters < cfg.getMaxPosters());
     }
 
     private boolean tooMany(int numberOfFollowers, int numberOfFriends) {
-        return numberOfFriends > (Config.FOLLOW_FACTOR * numberOfFollowers);
+        return numberOfFriends > (cfg.getFollowFactor() * numberOfFollowers);
     }
 
     private Set<String> getPosters() {
         Set<String> users = new HashSet<String>();
-        List<Tweet> tweets = TwitterAPI.search(queries, twitterUser, Config.TWITTER_FOLLOW_SEARCH_HITS);
+        List<Tweet> tweets = TwitterAPI.search(queries, twitterUser, cfg.getFollowerHits());
         tweets = TwitterAPI.filterTweets(tweets, twitterUser);
         for (Tweet tweet : tweets) {
             users.add(tweet.getFromUser());

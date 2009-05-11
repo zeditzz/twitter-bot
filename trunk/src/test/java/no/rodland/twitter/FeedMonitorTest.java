@@ -9,8 +9,9 @@ import org.junit.Test;
 public class FeedMonitorTest {
     private static final int NORMAL_URL_LENGTH = 30;
     private static final int EXTRA_PLACE_LENGTH = 5;
-    private static final int TWITTER_MSG_LENGTH = Config.TWITTER_MSG_LENGTH;
-    private static final int MIN_TITLE_LENGTH = Config.MIN_TITLE_LENGTH;
+    // XXX hmm. should match value in cfg
+    private static final int TWITTER_MSG_LENGTH = 140;
+    private static final int MIN_TITLE_LENGTH = 15;
 
 
     @Test

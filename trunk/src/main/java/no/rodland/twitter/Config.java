@@ -16,21 +16,22 @@ public class Config {
     private static final Logger log = Logger.getLogger(Config.class);
     @SuppressWarnings({"FieldCanBeLocal", "MismatchedQueryAndUpdateOfCollection"})
 
-    public static final double FOLLOW_FACTOR = 1.2;
-    public static final int DEFAULT_TWITTER_HITS = 30;
-    public static final int TWITTER_FOLLOW_SEARCH_HITS = 50;
-    private static final int NUMBER_NEWS = 20;
-    public static final int MAX_POSTERS = 5;
-    public static final int MAX_FOLLOWERS = 3;
-    public static final int TWITTER_MSG_LENGTH = 140;
-    public static final int MIN_TITLE_LENGTH = 15;
+//    public static final double FOLLOW_FACTOR = 1.2;
+//    public static final int DEFAULT_TWITTER_HITS = 30;
+//    public static final int TWITTER_FOLLOW_SEARCH_HITS = 50;
+//    private static final int NUMBER_NEWS = 20;
+//    public static final int MAX_POSTERS = 5;
+//    public static final int MAX_FOLLOWERS = 3;
+//    public static final int TWITTER_MSG_LENGTH = 140;
+//    public static final int MIN_TITLE_LENGTH = 15;
 
     public static final String CFG_KEY_TWITTERUSER = "twitteruser";
     public static final String CFG_KEY_TWITTERPASSWORD = "twitterpassword";
     public static final String CFG_KEY_TWITTER_QUERY = "twitterquery";
     public static final String CFG_KEY_FOLLOWER_QUERY = "followerquery";
     public static final String CFG_KEY_RSS_QUERY = "rssquery";
-    public static final String CFG_KEY_SITES = "sites";
+    private static final String CFG_KEY_SITES = "sites";
+    private static final String CFG_KEY_BLACKLIST = "blacklist";
 
     public String twitterUser;
     public String twitterPassword;
@@ -79,6 +80,15 @@ public class Config {
         return config.getList(CFG_KEY_FOLLOWER_QUERY);
     }
 
+    public boolean isBlacklisted(String potentialTwitterUser) {
+        if (potentialTwitterUser == null) {
+            return false;
+        }
+        List urls = config.getList(CFG_KEY_BLACKLIST);
+        return urls.contains(potentialTwitterUser);
+    }
+
+
     /**
      * Constructs a series of RSS-urls based on two lists: one with queries and ne with urls.  A new URL will be created for each pair of these.
      *
@@ -90,13 +100,13 @@ public class Config {
         List sites = config.getList(CFG_KEY_SITES);
         List<FeedUrl> myList = new ArrayList<FeedUrl>();
         for (Object siteObj : sites) {
-            String site = ((String) siteObj).replaceAll("NUMBER_NEWS", Integer.toString(NUMBER_NEWS));
+            String site = ((String) siteObj).replaceAll("NUMBER_NEWS", Integer.toString(getNumberNews()));
             for (Object query : queries) {
                 myList.add(new FeedUrl(site, (String) query));
             }
         }
         for (Object url : urls) {
-            String site = ((String) url).replaceAll("NUMBER_NEWS", Integer.toString(NUMBER_NEWS));
+            String site = ((String) url).replaceAll("NUMBER_NEWS", Integer.toString(getNumberNews()));
             myList.add(new FeedUrl(site));
         }
         return myList;
@@ -109,4 +119,38 @@ public class Config {
                 "getFollowerQueries() = " + getFollowerQueries() + "\n" +
                 "getLastUpdated() = " + getLastUpdated();
     }
+
+    public double getFollowFactor() {
+        return config.getDouble("FOLLOW_FACTOR", 1.0);
+    }
+
+    public int getTwitterHits() {
+        return config.getInt("DEFAULT_TWITTER_HITS", 20);
+    }
+
+    public int getFollowerHits() {
+        return config.getInt("TWITTER_FOLLOW_SEARCH_HITS", 20);
+    }
+
+    public int getNumberNews() {
+        return config.getInt("NUMBER_NEWS", 10);
+    }
+
+    public int getMaxPosters() {
+        return config.getInt("MAX_POSTERS", 5);
+    }
+
+    public int getMaxFollowers() {
+        return config.getInt("MAX_FOLLOWERS", 2);
+    }
+
+    public int getTwitterMsgLength() {
+        return config.getInt("TWITTER_MSG_LENGTH", 140);
+    }
+
+    public int getMinTitleLength() {
+        return config.getInt("MIN_TITLE_LENGTH", 15);
+    }
+
+
 }
