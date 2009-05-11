@@ -60,6 +60,7 @@ public class TwitterBot {
         Date lastPublished = retrieveAndPost(twitter, lastUpdate);
         FollowerRetriever followerRetriever = new FollowerRetriever(twitter, cfg);
         followerRetriever.followNew();
+        followerRetriever.unfollowBlackList();
         return lastPublished;
     }
 
