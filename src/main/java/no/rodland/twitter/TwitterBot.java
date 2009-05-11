@@ -12,7 +12,6 @@ public class TwitterBot {
     static final Logger log = Logger.getLogger(TwitterBot.class);
     private static Date lastUpdate;
     private static String twitterUser;
-    private static String twitterPassword;
     private static String cfgFile;
     private static Config cfg;
 
@@ -24,7 +23,7 @@ public class TwitterBot {
             cfg = new Config(cfgFile);
             //cfg.update();
             twitterUser = cfg.twitterUser;
-            twitterPassword = cfg.twitterPassword;
+            String twitterPassword = cfg.twitterPassword;
 
             Twitter twitter = new Twitter(twitterUser, twitterPassword);
             twitter.setSource("web");
@@ -36,7 +35,6 @@ public class TwitterBot {
 
             log.info("STARTING BOT");
             log.info("Looking for entries newer than " + lastUpdate + " for " + twitterUser);
-
 
             callTwitter(twitter);
 
@@ -51,7 +49,6 @@ public class TwitterBot {
             log.fatal("TwitterException caught: ", e);
             System.exit(4);
         }
-
     }
 
     private static void callTwitter(Twitter twitter) throws TwitterException {
