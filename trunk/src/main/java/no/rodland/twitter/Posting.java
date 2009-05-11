@@ -30,7 +30,7 @@ public class Posting implements Comparable<Posting> {
     private static final Pattern TITLE_WITH_URL = Pattern.compile("(.*)(https?://[^ ]*) *$");
 
     public Posting(Date updated, String title, Link link, String src) {
-        this.updated = new Date(updated.getTime());
+        this.updated = updated == null? new Date(0) : new Date(updated.getTime());
         this.title = title;
         this.link = link;
         this.src = src;
@@ -44,7 +44,7 @@ public class Posting implements Comparable<Posting> {
     }
 
     public Posting(Date updated, String title, String src) {
-        this.updated = new Date(updated.getTime());
+        this.updated = updated == null? new Date(0) : new Date(updated.getTime());
         this.title = extractTitle(title);
         this.link = extractLink(title);
         this.src = src;
