@@ -11,7 +11,6 @@ import twitter4j.Status;
 import twitter4j.Tweet;
 
 /**
- * Note: this class has a natural ordering that is inconsistent with equals.
  * <p/>
  * Created by IntelliJ IDEA.
  * User: fmr
@@ -31,7 +30,7 @@ public class Posting implements Comparable<Posting> {
     private static final Pattern TITLE_WITH_URL = Pattern.compile("(.*)(https?://[^ ]*) *$");
 
     public Posting(Date updated, String title, Link link, String src) {
-        this.updated = updated;
+        this.updated = new Date(updated.getTime());
         this.title = title;
         this.link = link;
         this.src = src;
@@ -45,7 +44,7 @@ public class Posting implements Comparable<Posting> {
     }
 
     public Posting(Date updated, String title, String src) {
-        this.updated = updated;
+        this.updated = new Date(updated.getTime());
         this.title = extractTitle(title);
         this.link = extractLink(title);
         this.src = src;
@@ -60,7 +59,7 @@ public class Posting implements Comparable<Posting> {
     }
 
     public Date getUpdated() {
-        return updated;
+        return new Date(updated.getTime());
     }
 
     public String getTitle() {
@@ -111,7 +110,40 @@ public class Posting implements Comparable<Posting> {
     }
 
     public int compareTo(Posting p) {
-        return getUpdated().compareTo(p.getUpdated());
+        int test = getUpdated().compareTo(p.getUpdated());
+        if (test != 0) {
+            return test;
+        }
+        test = getTitle().compareTo(p.getTitle());
+        if (test != 0) {
+            return test;
+        }
+        test = getUrl().compareTo(p.getUrl());
+        if (test != 0) {
+            return test;
+        }
+        return getSrc().compareTo(p.getSrc());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Posting)) {
+            return false;
+        }
+
+        Posting otherPosting = (Posting) obj;
+        return areEqual(this.getUpdated(), otherPosting.getUpdated()) &&
+                areEqual(this.getTitle(), otherPosting.getTitle()) &&
+                areEqual(this.getUrl(), otherPosting.getUrl()) &&
+                areEqual(this.getSrc(), otherPosting.getSrc());
+    }
+
+    private static boolean areEqual(Object aThis, Object aThat) {
+        return aThis == null ? aThat == null : aThis.equals(aThat);
     }
 
     private static String getTitle(Tweet tweet) {
