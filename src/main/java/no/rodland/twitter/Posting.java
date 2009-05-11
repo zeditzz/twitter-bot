@@ -79,7 +79,7 @@ public class Posting implements Comparable<Posting> {
     }
 
     public String getStatus() {
-        String url = link.getLink();
+        String url = link != null ? link.getLink() : "";
         String status = title + ": " + url;
         if (status.length() > maxMsgLength) {
             if (url.length() < maxMsgLength) {
