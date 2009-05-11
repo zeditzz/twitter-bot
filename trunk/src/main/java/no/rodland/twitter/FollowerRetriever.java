@@ -5,6 +5,7 @@ import twitter4j.*;
 import java.util.Set;
 import java.util.List;
 import java.util.HashSet;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -151,14 +152,16 @@ class FollowerRetriever {
 
     public int unfollowBlackList() throws TwitterException {
         List<String> friends = TwitterAPI.getFriends(twitter);
-        int destroyed = 0;
+        List<String> destroyed = new ArrayList<String>();
+        //int destroyed = 0;
         for (String friend : friends) {
             if (cfg.isBlacklisted(friend)) {
                 log.info(friend + " is balcklisted since last time, unfollowing");
                 twitter.destroy(friend);
-                destroyed++;
+                destroyed.add(friend);
             }
         }
-        return destroyed;
+        log.info("un-followed the following friends: " + destroyed);
+        return destroyed.size();
     }
 }
