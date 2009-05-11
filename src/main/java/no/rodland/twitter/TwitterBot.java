@@ -17,11 +17,11 @@ public class TwitterBot {
 
     public static void main(String[] args) {
         init(args);
+        log.info("STARTING BOT");
 
         // XXX TODO: should use lastUpdated from cfg-fiel to search SINCE in all searches.
         try {
             cfg = new Config(cfgFile);
-            //cfg.update();
             twitterUser = cfg.twitterUser;
             String twitterPassword = cfg.twitterPassword;
             Date cfgLastUpdate = cfg.getLastUpdated();
@@ -38,7 +38,6 @@ public class TwitterBot {
                 lastUpdate = cfgLastUpdate;
             }
 
-            log.info("STARTING BOT");
             log.info("Looking for entries newer than " + lastUpdate + " for " + twitterUser);
 
             lastUpdate = callTwitter(twitter, lastUpdate);
@@ -54,6 +53,7 @@ public class TwitterBot {
             log.fatal("TwitterException caught: ", e);
             System.exit(4);
         }
+        log.info("ENDING BOT");
     }
 
     private static Date callTwitter(Twitter twitter, Date lastUpdate) throws TwitterException {
@@ -71,7 +71,6 @@ public class TwitterBot {
         Collections.sort(postings);
         return postNewEntries(postings, twitter, lastUpdate);
     }
-
 
     private static Date postNewEntries(List<Posting> entries, Twitter twitter, Date lastUpdate) {
         int droppedOld = 0;
