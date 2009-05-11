@@ -34,8 +34,6 @@ import twitter4j.http.HttpClient;
 import twitter4j.http.Response;
 
 import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
@@ -69,68 +67,24 @@ import org.apache.log4j.Logger;
 public class RSSRetriever {
     private static final Logger log = Logger.getLogger(RSSRetriever.class);
     private static final String HTTP_AGENT = "NetNewsWire/3.1.7 (Mac OS X; http://www.newsgator.com/Individuals/NetNewsWire/)";
-    private final List<String> feedurls;
+    private final List<FeedUrl> feedurls;
     private final HttpClient http = new HttpClient();
     // private String fileName;
     private final Set<String> linkSet = new HashSet<String>();   // only posting 1 unique link pr session
     private final Set<String> titleSet = new HashSet<String>();  // only posting 1 unique title pr session
 
-
-//    public static void main(String[] args) {
-//        int interval = 10;
-//        List<RSSRetriever> list = new ArrayList<RSSRetriever>();
-//        for (String arg : args) {
-//            try {
-//                interval = Integer.parseInt(arg);
-//            } catch (NumberFormatException nfe) {
-//                list.add(new RSSRetriever(arg));
-//            }
-//        }
-//        if (list.size() == 0) {
-//            list.add(new RSSRetriever("feedmonitor.properties"));
-//        }
-//        while (true) {
-//            for (RSSRetriever fetcher : list) {
-//                fetcher.retrieve();
-//            }
-//            try {
-//                log.info("Sleeping " + interval + " minutes.");
-//                Thread.sleep(interval * 60 * 1000);
-//            } catch (InterruptedException ex) {
-//            }
-//        }
-//    }
-
-//    public RSSRetriever(String fileName) {
-//        this.fileName = fileName;
-//        log.info("Loading properties from " + fileName);
-//        try {
-//            prop.load(new FileInputStream(fileName));
-//        } catch (IOException ex) {
-//            log.error("Configuration file not found:" + ex.getMessage());
-//            System.exit(-1);
-//        }
-//        this.twitter = new Twitter(prop.getProperty("id"),
-//                prop.getProperty("password"));
-//        List<String> myList = new ArrayList<String>();
-//        myList.add(prop.getProperty("feedurl"));
-//        this.feedurls = myList;
-//        this.lastUpdate = new Date(Long.valueOf(prop.getProperty("lastUpdate", "0")));
-
-    //    }
-
-    public RSSRetriever(List<String> feedUrls) {
+    public RSSRetriever(List<FeedUrl> feedUrls) {
         this.feedurls = feedUrls;
     }
 
     public List<Posting> retrieve() {
         List<Posting> entries = new ArrayList<Posting>();
         http.setUserAgent(HTTP_AGENT);
-        for (String feedurl : feedurls) {
-            String source = getSource(feedurl);
+        for (FeedUrl feedurl : feedurls) {
+            String source = feedurl.getSource();
             log.info("Checking feed from " + source);
             try {
-                Response res = http.get(feedurl);
+                Response res = http.get(feedurl.getUrl());
                 List myEntries = new SyndFeedInput().build(res.asDocument()).getEntries();
                 int added = 0;
                 for (Object myEntry : myEntries) {
@@ -165,17 +119,6 @@ public class RSSRetriever {
         return entries;
     }
 
-    private static final Pattern MULTIPLE_URLS = Pattern.compile("https?://([^/]*\\.)?([^/]*\\.[^/]*)/.*");
 
-    public static String getSource(String url) {
-        if (url == null) {
-            return null;
-        }
-        Matcher m = MULTIPLE_URLS.matcher(url);
-        if (m.matches()) {
-            return m.group(2);
-        }
-        return url;
-    }
 
 }

@@ -32,7 +32,7 @@ public class Config {
     public static final String CFG_KEY_RSS_QUERY = "rssquery";
     public static final String CFG_KEY_SITES = "sites";
 
-    public  String twitterUser;
+    public String twitterUser;
     public String twitterPassword;
 
     PropertiesConfiguration config;
@@ -83,14 +83,14 @@ public class Config {
      *
      * @return a list of ready-to-call RSS URLs.
      */
-    List<String> getFeedUrls() {
+    List<FeedUrl> getFeedUrls() {
         List queries = config.getList(CFG_KEY_RSS_QUERY);
         List sites = config.getList(CFG_KEY_SITES);
-        List<String> myList = new ArrayList<String>();
+        List<FeedUrl> myList = new ArrayList<FeedUrl>();
         for (Object siteObj : sites) {
             String site = ((String) siteObj).replaceAll("NUMBER_NEWS", Integer.toString(NUMBER_NEWS));
             for (Object query : queries) {
-                myList.add(site + query);
+                myList.add(new FeedUrl(site, (String) query));
             }
         }
         return myList;
