@@ -11,23 +11,23 @@ import org.apache.log4j.Logger;
 public class TwitterAPI {
     private static final Logger log = Logger.getLogger(TwitterAPI.class);
 
-    public static Posting getPosting(Status status) {
+    private static Posting getPosting(Status status) {
         return new Posting(status.getCreatedAt(), getTitle(status), null, "Twitter: @" + status.getUser().getScreenName() + " (" + status.getId() + ")");
     }
 
-    public static Posting getPosting(Tweet tweet) {
+    private static Posting getPosting(Tweet tweet) {
         return new Posting(tweet.getCreatedAt(), getTitle(tweet), null, "Twitter: @" + tweet.getFromUser() + " (" + tweet.getId() + ")");
     }
 
-    public static String getTitle(Tweet tweet) {
+    private static String getTitle(Tweet tweet) {
         return getTitle(tweet.getFromUser(), tweet.getText());
     }
 
-    public static String getTitle(Status status) {
+    private static String getTitle(Status status) {
         return getTitle(status.getUser().getScreenName(), status.getText());
     }
 
-    public static String getTitle(String fromUser, String text) {
+    private static String getTitle(String fromUser, String text) {
         return "RT @" + fromUser + ": " + text;
     }
 
@@ -50,7 +50,7 @@ public class TwitterAPI {
         return sb.substring(0, sb.length() - 4);
     }
 
-    public static Posting getPosting(long tweetId) throws TwitterException {
+    private static Posting getPosting(long tweetId) throws TwitterException {
         Twitter anonTwitter = new Twitter();
         Status status = anonTwitter.show(tweetId);
         return getPosting(status);

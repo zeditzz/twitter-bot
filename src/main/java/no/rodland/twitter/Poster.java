@@ -12,8 +12,8 @@ import org.apache.log4j.Logger;
  * Time: 10:51:26 AM
  */
 public class Poster {
-    static final Logger log = Logger.getLogger(Poster.class);
-    static Twitter twitter;
+    private static final Logger log = Logger.getLogger(Poster.class);
+    private static Twitter twitter;
 
     private static String twitterUser;
     private static String twitterPassword;
@@ -45,7 +45,7 @@ public class Poster {
         return twitter;
     }
 
-    public static void init(String[] args) {
+    private static void init(String[] args) {
         if (args.length == 2) {
             twitterUser = args[0];
             twitterPassword = args[1];
@@ -59,7 +59,7 @@ public class Poster {
         }
     }
 
-    public static void usage() {
+    private static void usage() {
         System.out.println("Twitter poster");
         System.out.println("usage 1: java no.rodland.twitter.Poster <twitteruser> <twitterpassword>");
         System.out.println("usage 2: java no.rodland.twitter.Poster <twitteruser> <twitterpassword> \"<MSG>\"");

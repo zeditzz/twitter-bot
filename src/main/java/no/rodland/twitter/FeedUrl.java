@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * Time: 8:02:51 AM
  */
 public class FeedUrl {
-    private String baseUrl;
+    private final String baseUrl;
     private String query;
     private static final Pattern MULTIPLE_URLS = Pattern.compile("https?://([^/]*\\.)?([^/]*\\.[^/]*)/.*");
 
