@@ -37,6 +37,7 @@ public class Config {
 
     PropertiesConfiguration config;
     private static final String CFG_KEY_LASTUPDATED = "lastupdated";
+    private static final String CFG_KEY_URLS = "urls";
 
     @SuppressWarnings({"UnusedDeclaration"})
     public Config(String fileName) throws ConfigurationException {
@@ -84,6 +85,7 @@ public class Config {
      * @return a list of ready-to-call RSS URLs.
      */
     List<FeedUrl> getFeedUrls() {
+        List urls = config.getList(CFG_KEY_URLS);
         List queries = config.getList(CFG_KEY_RSS_QUERY);
         List sites = config.getList(CFG_KEY_SITES);
         List<FeedUrl> myList = new ArrayList<FeedUrl>();
@@ -92,6 +94,10 @@ public class Config {
             for (Object query : queries) {
                 myList.add(new FeedUrl(site, (String) query));
             }
+        }
+        for (Object url : urls) {
+            String site = ((String) url).replaceAll("NUMBER_NEWS", Integer.toString(NUMBER_NEWS));
+            myList.add(new FeedUrl(site));
         }
         return myList;
     }

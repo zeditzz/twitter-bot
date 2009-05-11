@@ -19,25 +19,36 @@ public class FeedUrl {
         this.query = query;
     }
 
-    public String getBaseUrl() {
-        return baseUrl;
+    public FeedUrl(String url) {
+        this.baseUrl = url;
     }
 
-    public String getQuery() {
+    private String getFormattedQuery() {
+        if (query == null) {
+            return "Query in URL";
+        }
+        return query;
+    }
+
+    private String getQuery() {
         return query;
     }
 
     public String getUrl() {
-        return baseUrl + query;
+        return baseUrl + (query == null ? "" : getQuery());
     }
 
     public String getSource() {
         if (baseUrl == null) {
             return null;
         }
+        if (query == null) {
+            return baseUrl;
+        }
+
         Matcher m = MULTIPLE_URLS.matcher(baseUrl);
         if (m.matches()) {
-            return m.group(2) + " " + query;
+            return m.group(2) + " " + getFormattedQuery();
         }
         return getUrl();
     }
