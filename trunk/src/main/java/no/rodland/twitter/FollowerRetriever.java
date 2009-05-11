@@ -22,23 +22,22 @@ class FollowerRetriever {
         this.twitter = twitter;
     }
 
-    public void followNew() {
+    public int followNew() {
         List<String> friends = TwitterAPI.getFriends(twitter);
         List<String> followers = TwitterAPI.getFollowersIDs(twitter);
 
         int numerbNew = (int) Math.ceil((cfg.getFollowFactor() * followers.size()) - friends.size());
         if (numerbNew < 1) {
             log.info("No more room for new friends for now.");
-            return;
+            return 0;
         }
         else if (friends.size() == 0) {
             log.warn("no friends - hhu. don't think so.. exiting ");
-            return;
+            return 0;
         }
         else {
             log.info("Should be able to follow " + numerbNew + " new friends.");
         }
-
 
         int followedPosters = followPosters(friends, followers);
 
@@ -46,6 +45,7 @@ class FollowerRetriever {
         int followedFollowers = followFollowers(friends, followers);
 
         log.info("followed " + followedPosters + " posters and " + followedFollowers + " friends");
+        return followedFollowers + followedPosters;
     }
 
     private int followPosters(List<String> friends, List<String> followers) {
@@ -147,5 +147,18 @@ class FollowerRetriever {
             users.add(tweet.getFromUser().toLowerCase());
         }
         return users;
+    }
+
+    public int unfollowBlackList() throws TwitterException {
+        List<String> friends = TwitterAPI.getFriends(twitter);
+        int destroyed = 0;
+        for (String friend : friends) {
+            if (cfg.isBlacklisted(friend)) {
+                log.info(friend + " is balcklisted since last time, unfollowing");
+                twitter.destroy(friend);
+                destroyed++;
+            }
+        }
+        return destroyed;
     }
 }
