@@ -36,34 +36,25 @@ public class TwitterAPI {
         return new Posting(status);
     }
 
-    public static List<String> getFriends(Twitter twitter) {
+    public static List<String> getFriends(Twitter twitter) throws TwitterException {
         List<String> returnList = new ArrayList<String>();
-        try {
-            List<User> users = twitter.getFriends();
-            log.info(twitter.verifyCredentials().getScreenName() + " has " + users.size() + " friends.");
-            // Must be a better way (but Array.asList does not seem to work for primitives)
-            for (User user : users) {
-                returnList.add(user.getScreenName().toLowerCase());
-            }
+        List<User> users = twitter.getFriends();
+        log.info(twitter.verifyCredentials().getScreenName() + " has " + users.size() + " friends.");
+        // Must be a better way (but Array.asList does not seem to work for primitives)
+        for (User user : users) {
+            returnList.add(user.getScreenName().toLowerCase());
         }
-        catch (TwitterException e) {
-            log.error("Exception when searching twitter", e);
-        }
+
         return returnList;
     }
 
-    public static List<String> getFollowersIDs(Twitter twitter) {
+    public static List<String> getFollowersIDs(Twitter twitter) throws TwitterException {
         List<String> returnList = new ArrayList<String>();
-        try {
-            List<User> users = twitter.getFollowers();
-            log.info(twitter.verifyCredentials().getScreenName() + " has " + users.size() + " followers.");
-            // Must be a better way (but Array.asList does not seem to work for primitives
-            for (User user : users) {
-                returnList.add(user.getScreenName().toLowerCase());
-            }
-        }
-        catch (TwitterException e) {
-            log.error("Exception when searching twitter", e);
+        List<User> users = twitter.getFollowers();
+        log.info(twitter.verifyCredentials().getScreenName() + " has " + users.size() + " followers.");
+        // Must be a better way (but Array.asList does not seem to work for primitives
+        for (User user : users) {
+            returnList.add(user.getScreenName().toLowerCase());
         }
         return returnList;
     }
