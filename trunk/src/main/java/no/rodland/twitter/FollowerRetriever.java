@@ -2,10 +2,7 @@ package no.rodland.twitter;
 
 import twitter4j.*;
 
-import java.util.Set;
-import java.util.List;
-import java.util.HashSet;
-import java.util.ArrayList;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -16,6 +13,14 @@ class FollowerRetriever {
     private String twitterUser;
     private Twitter twitter;
 
+    private enum FollowType {
+        POSTERS, FOLLOWERS;
+
+        public String toString() {
+            return name().toLowerCase();
+        }
+    }
+
     public FollowerRetriever(Twitter twitter, Config cfg) throws TwitterException {
         this.queries = cfg.getFollowerQueries();
         this.cfg = cfg;
@@ -24,130 +29,33 @@ class FollowerRetriever {
     }
 
     public int followNew() {
-        List<String> friends = TwitterAPI.getFriends(twitter);
-        List<String> followers = TwitterAPI.getFollowersIDs(twitter);
+        List<String> friends;
+        List<String> followers;
+        try {
+            friends = TwitterAPI.getFriends(twitter);
+            followers = TwitterAPI.getFollowersIDs(twitter);
+        }
+        catch (TwitterException e) {
+            log.error("Exception when getting friends or followers from twitter.", e);
+            return 0;
+        }
 
         int numerbNew = (int) Math.ceil((cfg.getFollowFactor() * followers.size()) - friends.size());
         if (numerbNew < 1) {
             log.info("No more room for new friends for now.");
             return 0;
         }
-        else if (friends.size() == 0) {
-            log.warn("no friends - hhu. don't think so.. exiting ");
-            return 0;
-        }
         else {
             log.info("Should be able to follow " + numerbNew + " new friends.");
         }
 
-        int followedPosters = followPosters(friends, followers);
+        int followedPosters = followFolks(friends, followers, FollowType.POSTERS, getPosters());
 
         // check (again) that the limit isn't reached
-        int followedFollowers = followFollowers(friends, followers);
+        int followedFollowers = followFolks(friends, followers, FollowType.FOLLOWERS, followers);
 
         log.info("followed " + followedPosters + " posters and " + followedFollowers + " friends");
         return followedFollowers + followedPosters;
-    }
-
-    private int followPosters(List<String> friends, List<String> followers) {
-        int numberOfFollowers = followers.size();
-        int numberOfFriends = friends.size();
-        if (tooMany(numberOfFollowers, numberOfFriends)) {
-            log.info("Following too many already.  not following posters.");
-            return 0;
-        }
-        Set<String> alreadyFollowed = new HashSet<String>();
-        Set<String> posters = getPosters();
-        int followedPosters = 0;
-        for (String posterId : posters) {
-            if (friends.contains(posterId)) {
-                alreadyFollowed.add(posterId);
-            }
-            else if (cfg.isBlacklisted(posterId)) {
-                log.info(posterId + " is blacklisted, will not follow.");
-            }
-            else if (okToFollowPoster(followedPosters, numberOfFollowers, numberOfFriends)) {
-                try {
-                    twitter.create(posterId);
-                    log.info("followed poster: " + posterId);
-                    followedPosters++;
-                    numberOfFriends++;
-                    friends.add(posterId);
-                }
-                catch (TwitterException e) {
-                    log.error("Error trying to befriend", e);
-                }
-            }
-            else {
-                log.info("already followed to many people, will not follow more for now.");
-                log.info("BTW: already following posters: " + alreadyFollowed);
-                return followedPosters;
-            }
-        }
-
-        log.info("already following posters posters: " + alreadyFollowed);
-        return followedPosters;
-    }
-
-    private int followFollowers(List<String> friends, List<String> followers) {
-        int numberOfFollowers = followers.size();
-        int numberOfFriends = friends.size();
-        if (tooMany(numberOfFollowers, numberOfFriends)) {
-            log.info("Following too many already.  not following followers.");
-            return 0;
-        }
-        Set<String> alreadyFollowed = new HashSet<String>();
-        alreadyFollowed.clear();
-        int followedFollowers = 0;
-        for (String followerId : followers) {
-            if (friends.contains(followerId)) {
-                alreadyFollowed.add(followerId);
-            }
-            else if (cfg.isBlacklisted(followerId)) {
-                log.info(followerId + " is blacklisted, will not follow.");
-            }
-            else if (okToFollowFollower(followedFollowers, numberOfFollowers, numberOfFriends)) {
-                try {
-                    twitter.create(followerId);
-                    log.info("followed follower: " + followerId);
-                    followedFollowers++;
-                    numberOfFriends++;
-                    friends.add(followerId);
-                }
-                catch (TwitterException e) {
-                    log.error("Error trying to befriend", e);
-                }
-            }
-            else {
-                log.info("already followed to many people, will not follow more for now.");
-                log.info("BTW: already following : " + alreadyFollowed);
-                return followedFollowers;
-            }
-        }
-        log.info("already following potential followers: " + alreadyFollowed);
-        return followedFollowers;
-    }
-
-    private boolean okToFollowFollower(int followedFollowers, int numberOfFollowers, int numberOfFriends) {
-        return !tooMany(numberOfFollowers, numberOfFriends) && (followedFollowers < cfg.getMaxFollowers());
-    }
-
-    private boolean okToFollowPoster(int followedPosters, int numberOfFollowers, int numberOfFriends) {
-        return !tooMany(numberOfFollowers, numberOfFriends) && (followedPosters < cfg.getMaxPosters());
-    }
-
-    private boolean tooMany(int numberOfFollowers, int numberOfFriends) {
-        return numberOfFriends > (cfg.getFollowFactor() * numberOfFollowers);
-    }
-
-    private Set<String> getPosters() {
-        Set<String> users = new HashSet<String>();
-        List<Tweet> tweets = TwitterAPI.search(queries, twitterUser, cfg.getFollowerHits());
-        tweets = TwitterAPI.filterTweets(tweets, twitterUser);
-        for (Tweet tweet : tweets) {
-            users.add(tweet.getFromUser().toLowerCase());
-        }
-        return users;
     }
 
     public int unfollowBlackList() throws TwitterException {
@@ -163,5 +71,66 @@ class FollowerRetriever {
         }
         log.info("un-followed the following friends: " + destroyed);
         return destroyed.size();
+    }
+
+    private int followFolks(List<String> friends, List<String> followers, FollowType type, Collection<String> potentials) {
+        int numberOfFollowers = followers.size();
+        int numberOfFriends = friends.size();
+        if (tooMany(numberOfFollowers, numberOfFriends)) {
+            log.info("Following too many already.  not following more " + type);
+            return 0;
+        }
+        Set<String> alreadyFollowed = new HashSet<String>();
+        int nmbFollowed = 0;
+        for (String potentialId : potentials) {
+            if (friends.contains(potentialId)) {
+                alreadyFollowed.add(potentialId);
+            }
+            else if (cfg.isBlacklisted(potentialId)) {
+                log.info(potentialId + " is blacklisted, will not follow.");
+            }
+            else if (okToFollow(nmbFollowed, numberOfFollowers, numberOfFriends, type)) {
+                try {
+                    twitter.create(potentialId);
+                    log.info("followed " + type + ": " + potentialId);
+                    nmbFollowed++;
+                    numberOfFriends++;
+                    friends.add(potentialId);
+                }
+                catch (TwitterException e) {
+                    log.error("Error trying to befriend", e);
+                }
+            }
+            else {
+                log.info("already followed to many people, will not follow more for now.");
+                log.info("BTW: already following posters: " + alreadyFollowed);
+                return nmbFollowed;
+            }
+        }
+
+        log.info("already following " + type + ": " + alreadyFollowed);
+        return nmbFollowed;
+    }
+
+    private boolean okToFollow(int followedType, int numberOfFollowers, int numberOfFriends, FollowType type) {
+        if (tooMany(numberOfFollowers, numberOfFriends)) {
+            return false;
+        }
+        int num = type == FollowType.POSTERS ? cfg.getMaxPosters() : cfg.getMaxFollowers();
+        return followedType < num;
+    }
+
+    private boolean tooMany(int numberOfFollowers, int numberOfFriends) {
+        return numberOfFriends > (cfg.getFollowFactor() * numberOfFollowers);
+    }
+
+    private Set<String> getPosters() {
+        Set<String> users = new HashSet<String>();
+        List<Tweet> tweets = TwitterAPI.search(queries, twitterUser, cfg.getFollowerHits());
+        tweets = TwitterAPI.filterTweets(tweets, twitterUser);
+        for (Tweet tweet : tweets) {
+            users.add(tweet.getFromUser().toLowerCase());
+        }
+        return users;
     }
 }
