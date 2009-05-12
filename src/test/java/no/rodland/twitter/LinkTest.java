@@ -23,7 +23,7 @@ public class LinkTest {
 
     @Test
     public void testSimplifyYahoo() {
-        Assert.assertEquals("http://www.chicoer.com/ci_12122084?source=rss", Link.simplify("http://us.rd.yahoo.com/dailynews/rss/search/schibsted/SIG=11h4ig1ld/*http%3A//www.chicoer.com/ci_12122084?source=rss"));
+        Assert.assertEquals("http://www.chicoer.com/ci_12122084?source=rss", Link.simplify("http://us.rd.yahoo.com/dailynews/rss/search/google/SIG=11h4ig1ld/*http%3A//www.chicoer.com/ci_12122084?source=rss"));
     }
 
     @Test
