@@ -16,29 +16,30 @@ public class Config {
     private static final Logger log = Logger.getLogger(Config.class);
     @SuppressWarnings({"FieldCanBeLocal", "MismatchedQueryAndUpdateOfCollection"})
 
-//    public static final double FOLLOW_FACTOR = 1.2;
-//    public static final int DEFAULT_TWITTER_HITS = 30;
-//    public static final int TWITTER_FOLLOW_SEARCH_HITS = 50;
-//    private static final int NUMBER_NEWS = 20;
-//    public static final int MAX_POSTERS = 5;
-//    public static final int MAX_FOLLOWERS = 3;
-//    public static final int TWITTER_MSG_LENGTH = 140;
-//    public static final int MIN_TITLE_LENGTH = 15;
-
-    private static final String CFG_KEY_TWITTERUSER = "twitteruser";
-    private static final String CFG_KEY_TWITTERPASSWORD = "twitterpassword";
-    private static final String CFG_KEY_TWITTER_QUERY = "twitterquery";
-    private static final String CFG_KEY_FOLLOWER_QUERY = "followerquery";
-    private static final String CFG_KEY_RSS_QUERY = "rssquery";
-    private static final String CFG_KEY_SITES = "sites";
-    private static final String CFG_KEY_BLACKLIST = "blacklist";
-
     public String twitterUser;
     public String twitterPassword;
 
     private PropertiesConfiguration config;
+
+    private static final String CFG_KEY_BLACKLIST = "blacklist";
+    private static final String CFG_KEY_DEFAULT_TWITTER_HITS = "DEFAULT_TWITTER_HITS";
+    private static final String CFG_KEY_FOLLOWER_QUERY = "followerquery";
+    private static final String CFG_KEY_FOLLOW_FACTOR = "FOLLOW_FACTOR";
     private static final String CFG_KEY_LASTUPDATED = "lastupdated";
+    private static final String CFG_KEY_MAX_FOLLOWERS = "MAX_FOLLOWERS";
+    private static final String CFG_KEY_MAX_POSTERS = "MAX_POSTERS";
+    private static final String CFG_KEY_MIN_TITLE_LENGTH = "MIN_TITLE_LENGTH";
+    private static final String CFG_KEY_NUMBER_NEWS = "NUMBER_NEWS";
+    private static final String CFG_KEY_RSS_QUERY = "rssquery";
+    private static final String CFG_KEY_SITES = "sites";
+    private static final String CFG_KEY_TWITTERPASSWORD = "twitterpassword";
+    private static final String CFG_KEY_TWITTERUSER = "twitteruser";
+    private static final String CFG_KEY_TWITTER_FOLLOW_SEARCH_HITS = "TWITTER_FOLLOW_SEARCH_HITS";
+    private static final String CFG_KEY_TWITTER_MSG_LENGTH = "TWITTER_MSG_LENGTH";
+    private static final String CFG_KEY_TWITTER_QUERY = "twitterquery";
     private static final String CFG_KEY_URLS = "urls";
+    private static final String NUM_REPLACE_STRING = "NUMBER_NEWS";
+    private static final String CFG_KEY_CONTENT_FILTER = "contentfilter";
 
     @SuppressWarnings({"UnusedDeclaration"})
     public Config(String fileName) throws ConfigurationException {
@@ -47,7 +48,6 @@ public class Config {
 
         twitterUser = config.getString(CFG_KEY_TWITTERUSER);
         twitterPassword = config.getString(CFG_KEY_TWITTERPASSWORD);
-
     }
 
     public void update() {
@@ -57,6 +57,14 @@ public class Config {
     public void update(Date lastUpdated) {
         config.setProperty(CFG_KEY_LASTUPDATED, lastUpdated.getTime());
         log.info("setting last updated in " + config.getFileName() + " to " + config.getLong(CFG_KEY_LASTUPDATED));
+        config.clearProperty("norske_bostaver");
+        config.addProperty("norske_bostaver", "ae: æ");
+        config.addProperty("norske_bostaver", "oe: ø");
+        config.addProperty("norske_bostaver", "aa: å");
+        config.addProperty("norske_bostaver", "AE: Æ");
+        config.addProperty("norske_bostaver", "OE: Ø");
+        config.addProperty("norske_bostaver", "AA: Å");
+
         try {
             config.save();
         }
@@ -88,6 +96,25 @@ public class Config {
         return urls.contains(potentialTwitterUser);
     }
 
+    /**
+     * Checks <code>content</code> and returns <code>null</code> if content ok, otherwise returns the word that is bad.
+     *
+     * @param content the content to check
+     * @return <code>null</code> if content ok, otherwise returns the word that is bad.
+     */
+    public String isBadContent(String content) {
+        if (content == null) {
+            return null;
+        }
+        List badWords = config.getList(CFG_KEY_CONTENT_FILTER);
+        for (Object badWord : badWords) {
+            String word = ((String) badWord).toLowerCase();
+            if (content.toLowerCase().contains(word)) {
+                return word;
+            }
+        }
+        return null;
+    }
 
     /**
      * Constructs a series of RSS-urls based on two lists: one with queries and ne with urls.  A new URL will be created for each pair of these.
@@ -100,11 +127,11 @@ public class Config {
         List sites = config.getList(CFG_KEY_SITES);
         List<FeedUrl> myList = new ArrayList<FeedUrl>();
         for (Object url : urls) {
-            String site = ((String) url).replaceAll("NUMBER_NEWS", Integer.toString(getNumberNews()));
+            String site = ((String) url).replaceAll(NUM_REPLACE_STRING, Integer.toString(getNumberNews()));
             myList.add(new FeedUrl(site));
         }
         for (Object siteObj : sites) {
-            String site = ((String) siteObj).replaceAll("NUMBER_NEWS", Integer.toString(getNumberNews()));
+            String site = ((String) siteObj).replaceAll(NUM_REPLACE_STRING, Integer.toString(getNumberNews()));
             for (Object query : queries) {
                 myList.add(new FeedUrl(site, (String) query));
             }
@@ -121,36 +148,34 @@ public class Config {
     }
 
     public double getFollowFactor() {
-        return config.getDouble("FOLLOW_FACTOR", 1.0);
+        return config.getDouble(CFG_KEY_FOLLOW_FACTOR, 1.0);
     }
 
     public int getTwitterHits() {
-        return config.getInt("DEFAULT_TWITTER_HITS", 20);
+        return config.getInt(CFG_KEY_DEFAULT_TWITTER_HITS, 20);
     }
 
     public int getFollowerHits() {
-        return config.getInt("TWITTER_FOLLOW_SEARCH_HITS", 20);
+        return config.getInt(CFG_KEY_TWITTER_FOLLOW_SEARCH_HITS, 20);
     }
 
     int getNumberNews() {
-        return config.getInt("NUMBER_NEWS", 10);
+        return config.getInt(CFG_KEY_NUMBER_NEWS, 10);
     }
 
     public int getMaxPosters() {
-        return config.getInt("MAX_POSTERS", 5);
+        return config.getInt(CFG_KEY_MAX_POSTERS, 5);
     }
 
     public int getMaxFollowers() {
-        return config.getInt("MAX_FOLLOWERS", 2);
+        return config.getInt(CFG_KEY_MAX_FOLLOWERS, 2);
     }
 
     public int getTwitterMsgLength() {
-        return config.getInt("TWITTER_MSG_LENGTH", 140);
+        return config.getInt(CFG_KEY_TWITTER_MSG_LENGTH, 140);
     }
 
     public int getMinTitleLength() {
-        return config.getInt("MIN_TITLE_LENGTH", 15);
+        return config.getInt(CFG_KEY_MIN_TITLE_LENGTH, 15);
     }
-
-
 }

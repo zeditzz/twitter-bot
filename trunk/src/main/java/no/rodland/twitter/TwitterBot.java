@@ -76,13 +76,21 @@ public class TwitterBot {
         int droppedOld = 0;
         Date lastPublished = lastUpdate;
         for (Posting entry : entries) {
+
             Date published = entry.getUpdated();
             if (lastUpdate.before(published)) {   // post ALL entries newer than lastPublished
-                if (lastPublished.before(published)) {  // only update lastPublished if it's the newest
-                    lastPublished = published;
+                String bad = cfg.isBadContent(entry.getStatus());
+                if (bad == null) {  // not bad words
+                    TwitterAPI.post(twitter, entry);
+                    if (lastPublished.before(published)) {  // only update lastPublished if it's the newest
+                        lastPublished = published;
+                    }
+                    lastUpdate = published;
                 }
-                lastUpdate = published;
-                TwitterAPI.post(twitter, entry);
+                else {
+                    log.warn("filtered out content - will not post - bad word: " + bad);
+                    log.warn(entry);
+                }
             }
             else {
                 droppedOld++;
