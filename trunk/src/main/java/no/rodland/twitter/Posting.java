@@ -28,9 +28,11 @@ public class Posting implements Comparable<Posting> {
     private static final int maxMsgLength = 140;
     private static final int minTitleLength = 15;
     private static final Pattern TITLE_WITH_URL = Pattern.compile("(.*)(https?://[^ ]*) *$");
+    private static final int ODD_PRIME_NUMBER = 37;
+    private static final int SEED = 23;
 
     public Posting(Date updated, String title, Link link, String src) {
-        this.updated = updated == null? new Date(0) : new Date(updated.getTime());
+        this.updated = updated == null ? new Date(0) : new Date(updated.getTime());
         this.title = title;
         this.link = link;
         this.src = src;
@@ -44,7 +46,7 @@ public class Posting implements Comparable<Posting> {
     }
 
     public Posting(Date updated, String title, String src) {
-        this.updated = updated == null? new Date(0) : new Date(updated.getTime());
+        this.updated = updated == null ? new Date(0) : new Date(updated.getTime());
         this.title = extractTitle(title);
         this.link = extractLink(title);
         this.src = src;
@@ -140,6 +142,20 @@ public class Posting implements Comparable<Posting> {
                 areEqual(this.getTitle(), otherPosting.getTitle()) &&
                 areEqual(this.getUrl(), otherPosting.getUrl()) &&
                 areEqual(this.getSrc(), otherPosting.getSrc());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = SEED;
+        result = hash(result, getUpdated());
+        result = hash(result, getTitle());
+        result = hash(result, getUrl());
+        result = hash(result, getSrc());
+        return result;
+    }
+
+    private static int hash(int aSeed, Object aObject) {
+        return ODD_PRIME_NUMBER * aSeed + (aObject == null ? 0 : aObject.hashCode());
     }
 
     private static boolean areEqual(Object aThis, Object aThat) {

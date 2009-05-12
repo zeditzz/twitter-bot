@@ -13,9 +13,9 @@ public class TwitterAPITest {
     @Test
     public void testGetSearchString() {
         List<String> queries = new ArrayList<String>();
-        queries.add("schibsted");
-        queries.add("%22kjell+aamot%22");
-        Assert.assertEquals("-" + TWITTER_USER + " schibsted OR %22kjell+aamot%22", TwitterAPI.getSearchStringExcludingUser(queries, TWITTER_USER));
+        queries.add("whitehouse");
+        queries.add("%22bill+clinton%22");
+        Assert.assertEquals("-" + TWITTER_USER + " whitehouse OR %22bill+clinton%22", TwitterAPI.getSearchStringExcludingUser(queries, TWITTER_USER));
     }
 
     @Test

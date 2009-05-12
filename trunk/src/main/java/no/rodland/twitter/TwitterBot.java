@@ -10,7 +10,6 @@ import org.apache.commons.configuration.ConfigurationException;
 public class TwitterBot {
 
     static final Logger log = Logger.getLogger(TwitterBot.class);
-    //private static Date lastUpdate;
     private static String twitterUser;
     private static String cfgFile;
     private static Config cfg;
@@ -19,7 +18,7 @@ public class TwitterBot {
         log.info("STARTING BOT");
         init(args);
 
-        // XXX TODO: should use lastUpdated from cfg-fiel to search SINCE in all searches.
+        // XXX: should use lastUpdated from cfg-fiel to search SINCE in all searches.
         try {
             cfg = new Config(cfgFile);
             twitterUser = cfg.twitterUser;
