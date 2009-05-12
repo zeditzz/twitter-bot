@@ -12,25 +12,24 @@ import org.junit.Test;
  * User: fmr
  * Date: Apr 30, 2009
  * Time: 6:20:58 PM
- * To change this template use File | Settings | File Templates.
  */
 public class TwitterRetrieverTest {
-    private static final String TWITTER_USER = "schibstednews";
+    private static final String TWITTER_USER = "twitteruser";
 
     @Test
     public void testGetSearchStringWithoutUser() {
         List<String> queries = new ArrayList<String>();
-        queries.add("schibsted");
-        queries.add("%22kjell+aamot%22");
-        Assert.assertEquals("-" + TWITTER_USER + " schibsted OR %22kjell+aamot%22", TwitterAPI.getSearchStringExcludingUser(queries, TWITTER_USER));
+        queries.add("whitehouse");
+        queries.add("%22bill+clinton%22");
+        Assert.assertEquals("-" + TWITTER_USER + " whitehouse OR %22bill+clinton%22", TwitterAPI.getSearchStringExcludingUser(queries, TWITTER_USER));
     }
 
     @Test
     public void testGetSearchString() {
         List<String> queries = new ArrayList<String>();
-        queries.add("schibsted");
-        queries.add("%22kjell+aamot%22");
-        Assert.assertEquals("schibsted OR %22kjell+aamot%22", TwitterAPI.getSearchString(queries));
+        queries.add("whitehouse");
+        queries.add("%22bill+clinton%22");
+        Assert.assertEquals("whitehouse OR %22bill+clinton%22", TwitterAPI.getSearchString(queries));
     }
 
     @Test
