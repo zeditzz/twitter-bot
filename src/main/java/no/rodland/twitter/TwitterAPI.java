@@ -108,11 +108,10 @@ public class TwitterAPI {
     }
 
     static void post(Twitter twitter, Posting entry) {
-        //String title = entry.getTitle();
-        //String link = entry.getUrl();
         String status = entry.getStatus();
+
         log.info("New entry published at " + entry.getUpdated());
-        log.info("  status: " + entry.getStatus());
+        log.info("  status: " + status);
         log.info("  src: " + entry.getSrc());
 
         log.info("Updating Twitter: " + status);
@@ -131,6 +130,7 @@ public class TwitterAPI {
     public static void reTwitter(long id, Twitter twitter) throws TwitterException {
         post(twitter, getPosting(id));
     }
+
 }
 
 

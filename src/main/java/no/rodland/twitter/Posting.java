@@ -202,7 +202,8 @@ public class Posting implements Comparable<Posting> {
                 "updated=" + updated +
                 ", title='" + title + '\'' +
                 ", link=" + link +
-                ", src='" + src + '\'' +
+                ", status='" + getStatus() + '\'' +
+                ", src='" + getSrc() + '\'' +
                 '}';
     }
 }
