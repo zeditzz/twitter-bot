@@ -65,7 +65,7 @@ class FollowerRetriever {
         for (String friend : friends) {
             if (cfg.isBlacklisted(friend)) {
                 log.info(friend + " is balcklisted since last time, unfollowing");
-                twitter.destroy(friend);
+                twitter.destroyFriendship(friend);
                 destroyed.add(friend);
             }
         }
@@ -91,7 +91,7 @@ class FollowerRetriever {
             }
             else if (okToFollow(nmbFollowed, numberOfFollowers, numberOfFriends, type)) {
                 try {
-                    twitter.create(potentialId);
+                    twitter.createFriendship(potentialId);
                     log.info("followed " + type + ": " + potentialId);
                     nmbFollowed++;
                     numberOfFriends++;

@@ -27,7 +27,7 @@ public class Follower {
         twitter.setSource("web");
         log.info("follow: " + screenName);
         try {
-            log.info(twitter.create(screenName));
+            log.info(twitter.createFriendship(screenName));
         } catch (TwitterException e) {
             log.error("error when trying to follow", e);
         }

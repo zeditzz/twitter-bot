@@ -32,7 +32,7 @@ public class TwitterAPI {
 
     private static Posting getPosting(long tweetId) throws TwitterException {
         Twitter anonTwitter = new Twitter();
-        Status status = anonTwitter.show(tweetId);
+        Status status = anonTwitter.showStatus(tweetId);
         return new Posting(status);
     }
 
@@ -120,7 +120,7 @@ public class TwitterAPI {
         }
 
         try {
-            twitter.update(status);
+            twitter.updateStatus(status);
         }
         catch (TwitterException e) {
             log.error("Exception when posting update", e);

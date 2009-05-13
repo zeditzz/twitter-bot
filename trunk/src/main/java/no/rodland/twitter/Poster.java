@@ -33,7 +33,7 @@ public class Poster {
         } else {
             Twitter tw = getTwitter();
             log.info("posting status: " + status);
-            log.info(tw.update(status));
+            log.info(tw.updateStatus(status));
         }
     }
 
