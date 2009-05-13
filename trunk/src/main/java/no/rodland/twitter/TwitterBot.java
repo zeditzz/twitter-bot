@@ -41,6 +41,7 @@ public class TwitterBot {
 
             lastUpdate = callTwitter(twitter, lastUpdate);
 
+            logRateInfo(twitter);
             cfg.update(lastUpdate);
             log.info("Latest status is now: " + lastUpdate);
         }
@@ -53,6 +54,14 @@ public class TwitterBot {
             System.exit(4);
         }
         log.info("ENDING BOT");
+    }
+
+    private static void logRateInfo(Twitter twitter) throws TwitterException {
+        RateLimitStatus rls = twitter.rateLimitStatus();
+        log.info("reset-time in sec = " + rls.getResetTimeInSeconds());
+        log.info("rate limit reset = " + rls.getRateLimitReset());
+        log.info("reset-time = " + rls.getDateTime());
+        log.info("limit = " + rls.getHourlyLimit() + ", remaining calls = " + rls.getRemainingHits());
     }
 
     private static Date callTwitter(Twitter twitter, Date lastUpdate) throws TwitterException {
