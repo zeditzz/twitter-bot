@@ -93,11 +93,13 @@ public class RSSRetriever {
                     String title = posting.getTitle();
                     if (titleSet.contains(title)) {
                         log.info("removed duplicate (title): " + title + " " + url);
-                    } else {
+                    }
+                    else {
                         titleSet.add(title);
                         if (linkSet.contains(url)) {
                             log.info("removed duplicate (url): " + title + " " + url);
-                        } else {
+                        }
+                        else {
                             added++;
                             linkSet.add(url);
                             entries.add(posting);
@@ -105,20 +107,15 @@ public class RSSRetriever {
                     }
                 }
                 log.info(added + " entries added from " + source + " (dropped " + (myEntries.size() - added) + " dups)");
-
             }
             catch (TwitterException te) {
-                log.info("Failed to fetch the feed:" + te.getMessage());
+                log.info("Failed to fetch the feed:", te);
             }
 
             catch (FeedException fe) {
-                log.info("Failed to parse the feed:" + fe.getMessage());
+                log.info("Failed to parse the feed:", fe);
             }
-
         }
         return entries;
     }
-
-
-
 }
