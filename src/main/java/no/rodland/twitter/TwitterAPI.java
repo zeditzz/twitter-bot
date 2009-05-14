@@ -70,7 +70,6 @@ public class TwitterAPI {
         ExtendedUser eUser = twitter.verifyCredentials();
         log.info(eUser.getScreenName() + " has " + getFriendCount(eUser) + " friends. (size of users-list: " + returnList.size() + ")");
 
-
         return returnList;
     }
 
@@ -131,7 +130,8 @@ public class TwitterAPI {
         for (Tweet tweet : tweets) {
             if (twitterUser.equals(tweet.getFromUser())) {
                 droppedOwn++;
-            } else {
+            }
+            else {
                 filteredTweets.add(tweet);
             }
         }
