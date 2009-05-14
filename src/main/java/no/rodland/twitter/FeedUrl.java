@@ -52,5 +52,4 @@ public class FeedUrl {
         }
         return getUrl();
     }
-
 }
