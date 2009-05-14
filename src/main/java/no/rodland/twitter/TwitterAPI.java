@@ -1,12 +1,9 @@
 package no.rodland.twitter;
 
+import org.apache.log4j.Logger;
 import twitter4j.*;
 
-import java.util.List;
-import java.util.Collections;
-import java.util.ArrayList;
-
-import org.apache.log4j.Logger;
+import java.util.*;
 
 public class TwitterAPI {
     private static final Logger log = Logger.getLogger(TwitterAPI.class);
@@ -36,26 +33,64 @@ public class TwitterAPI {
         return new Posting(status);
     }
 
-    public static List<String> getFriends(Twitter twitter) throws TwitterException {
-        List<String> returnList = new ArrayList<String>();
-        List<User> users = twitter.getFriends();
-        log.info(twitter.verifyCredentials().getScreenName() + " has " + users.size() + " friends.");
-        // Must be a better way (but Array.asList does not seem to work for primitives)
-        for (User user : users) {
-            returnList.add(user.getScreenName().toLowerCase());
+    public static int getFriendCount(Twitter twitter) throws TwitterException {
+        return getFriendCount(twitter.verifyCredentials());
+    }
+
+    public static int getFollowerCount(Twitter twitter) throws TwitterException {
+        return getFollowerCount(twitter.verifyCredentials());
+    }
+
+    public static int getFriendCount(ExtendedUser user) throws TwitterException {
+        return user.getFriendsCount();
+    }
+
+    public static int getFollowerCount(ExtendedUser user) throws TwitterException {
+        return user.getFollowersCount();
+    }
+
+    public static long getLatestStatusIs(ExtendedUser user) throws TwitterException {
+        return user.getStatusId();
+    }
+
+    public static Set<String> getFriends(Twitter twitter) throws TwitterException {
+        Set<String> returnList = new HashSet<String>();
+        int page = 1;
+        Paging paging = new Paging(page);
+        List<User> users = twitter.getFriends(paging);
+        while (users.size() > 0) {
+            // Must be a better way (but Array.asList does not seem to work for primitives)
+            for (User user : users) {
+                returnList.add(user.getScreenName().toLowerCase());
+            }
+            page++;
+            paging.setPage(page);
+            users = twitter.getFriends(paging);
         }
+        ExtendedUser eUser = twitter.verifyCredentials();
+        log.info(eUser.getScreenName() + " has " + getFriendCount(eUser) + " friends. (size of users-list: " + returnList.size() + ")");
+
 
         return returnList;
     }
 
-    public static List<String> getFollowersIDs(Twitter twitter) throws TwitterException {
-        List<String> returnList = new ArrayList<String>();
-        List<User> users = twitter.getFollowers();
-        log.info(twitter.verifyCredentials().getScreenName() + " has " + users.size() + " followers.");
-        // Must be a better way (but Array.asList does not seem to work for primitives
-        for (User user : users) {
-            returnList.add(user.getScreenName().toLowerCase());
+    public static Set<String> getFollowersIDs(Twitter twitter) throws TwitterException {
+        Set<String> returnList = new HashSet<String>();
+
+        int page = 1;
+        Paging paging = new Paging(page);
+        List<User> users = twitter.getFollowers(paging);
+        while (users.size() > 0) {
+            for (User user : users) {
+                returnList.add(user.getScreenName().toLowerCase());
+            }
+            page++;
+            paging.setPage(page);
+            users = twitter.getFollowers(paging);
         }
+        ExtendedUser eUser = twitter.verifyCredentials();
+        log.info(eUser.getScreenName() + " has " + getFollowerCount(eUser) + " followers. (size of users-list: " + returnList.size() + ")");
+        // Must be a better way (but Array.asList does not seem to work for primitives
         return returnList;
     }
 
@@ -96,8 +131,7 @@ public class TwitterAPI {
         for (Tweet tweet : tweets) {
             if (twitterUser.equals(tweet.getFromUser())) {
                 droppedOwn++;
-            }
-            else {
+            } else {
                 filteredTweets.add(tweet);
             }
         }
@@ -130,7 +164,6 @@ public class TwitterAPI {
     public static void reTwitter(long id, Twitter twitter) throws TwitterException {
         post(twitter, getPosting(id));
     }
-
 }
 
 

@@ -70,7 +70,7 @@ public class Posting implements Comparable<Posting> {
 
     public String getUrl() {
         if (link == null) {
-            log.info("no link for posting: " + this);
+            //log.info("no link for posting: " + this);
             return "";
         }
         return link.getLink();

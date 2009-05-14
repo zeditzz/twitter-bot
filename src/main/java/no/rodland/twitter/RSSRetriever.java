@@ -41,28 +41,7 @@ import org.apache.log4j.Logger;
 //import org.slf4j.LoggerFactory;
 
 /**
- * <p>
- * FeedMonitor is a simple feed monitoring application.<br>
- * FeedMonitor monitors specified feeds and reports newly posted entries to the specified Twitter account every 10 minutes.<br>
- * It is possible to specify multiple configuration files.<br>
- * Numeric parameter will be recognized as monitoring interverval in minutes.<br>
- * Usage: java twitter4j.examples.FeedMonitor [config_file_path ..] [interval(min)]<br>
- * <br>
- * If no configuration file path is specified, FeedMonitor will look for default configuration file name - &quot;feedmonitor.properties&quot;.<br>
- * The configuration file format is Java standard properties file format with following properties:<br>
- * feedurl : the feed URL you want to monitor<br>
- * id : Twitter id<br>
- * password : Twitter password<br>
- * <br>
- * <hr>
- * e.g. a sample properties for monitoring CSS latest news every 10 minutes
- * <pre style="border: solid 1px black;background-color:#AAF">
- * feedurl=http://rss.cnn.com/rss/cnn_latest.rss
- * id=YOUR_TWITTER_ID
- * password=YOUR_TWITTER_PASSWORD</pre>
- * </p>
- *
- * @author Yusuke Yamamoto - yusuke at mac.com
+ * @author Fredrik Rodland - inspired by example in twitter4j written by Yusuke Yamamoto - yusuke at mac.com
  */
 public class RSSRetriever {
     private static final Logger log = Logger.getLogger(RSSRetriever.class);
@@ -80,6 +59,8 @@ public class RSSRetriever {
     public List<Posting> retrieve() {
         List<Posting> entries = new ArrayList<Posting>();
         http.setUserAgent(HTTP_AGENT);
+        int totalAdded = 0;
+        int totalRemoved = 0;
         for (FeedUrl feedurl : feedurls) {
             String source = feedurl.getSource();
             log.info("Checking feed from " + source);
@@ -89,24 +70,25 @@ public class RSSRetriever {
                 int added = 0;
                 for (Object myEntry : myEntries) {
                     Posting posting = new Posting((SyndEntry) myEntry, source);
-                    String url = posting.getUrl();
-                    String title = posting.getTitle();
+                    String url = posting.getUrl().toLowerCase();
+                    String title = posting.getTitle().toLowerCase();
                     if (titleSet.contains(title)) {
                         log.info("removed duplicate (title): " + title + " " + url);
-                    }
-                    else {
+                    } else {
                         titleSet.add(title);
                         if (linkSet.contains(url)) {
                             log.info("removed duplicate (url): " + title + " " + url);
-                        }
-                        else {
+                        } else {
                             added++;
                             linkSet.add(url);
                             entries.add(posting);
                         }
                     }
                 }
-                log.info(added + " entries added from " + source + " (dropped " + (myEntries.size() - added) + " dups)");
+                int removed = myEntries.size() - added;
+                totalAdded += added;
+                totalRemoved += removed;
+                log.info(added + " entries added from " + source + " (dropped " + removed + " dups)");
             }
             catch (TwitterException te) {
                 log.error("Failed to fetch the feed:", te);
@@ -116,6 +98,7 @@ public class RSSRetriever {
                 log.error("Failed to parse the feed:", fe);
             }
         }
+        log.info("A total of " + totalAdded + " entries added and " + totalRemoved + " dropped from " + feedurls.size() + " feeds.");
         return entries;
     }
 }
