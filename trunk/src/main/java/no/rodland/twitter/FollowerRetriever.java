@@ -29,37 +29,40 @@ class FollowerRetriever {
     }
 
     public int followNew() {
-        List<String> friends;
-        List<String> followers;
+        Set<String> friends;
+        Set<String> followers;
+        int numberOfFriends;
+        int numberOfFollowers;
         try {
             friends = TwitterAPI.getFriends(twitter);
+            numberOfFriends = TwitterAPI.getFriendCount(twitter);
             followers = TwitterAPI.getFollowersIDs(twitter);
+            numberOfFollowers = TwitterAPI.getFollowerCount(twitter);
         }
         catch (TwitterException e) {
             log.error("Exception when getting friends or followers from twitter.", e);
             return 0;
         }
 
-        int numerbNew = (int) Math.ceil((cfg.getFollowFactor() * followers.size()) - friends.size());
+        int numerbNew = (int) Math.ceil((cfg.getFollowFactor() * numberOfFollowers) - numberOfFriends);
         if (numerbNew < 1) {
             log.info("No more room for new friends for now.");
             return 0;
-        }
-        else {
+        } else {
             log.info("Should be able to follow " + numerbNew + " new friends.");
         }
 
-        int followedPosters = followFolks(friends, followers, FollowType.POSTERS, getPosters());
-
+        int followedPosters = followFolks(friends, FollowType.POSTERS, getPosters(), numberOfFriends, numberOfFollowers);
+        numberOfFriends += followedPosters;
         // check (again) that the limit isn't reached
-        int followedFollowers = followFolks(friends, followers, FollowType.FOLLOWERS, followers);
+        int followedFollowers = followFolks(friends, FollowType.FOLLOWERS, followers, numberOfFriends, numberOfFollowers);
 
         log.info("followed " + followedPosters + " posters and " + followedFollowers + " friends");
         return followedFollowers + followedPosters;
     }
 
     public int unfollowBlackList() throws TwitterException {
-        List<String> friends = TwitterAPI.getFriends(twitter);
+        Set<String> friends = TwitterAPI.getFriends(twitter);
         List<String> destroyed = new ArrayList<String>();
         //int destroyed = 0;
         for (String friend : friends) {
@@ -73,9 +76,9 @@ class FollowerRetriever {
         return destroyed.size();
     }
 
-    private int followFolks(List<String> friends, List<String> followers, FollowType type, Collection<String> potentials) {
-        int numberOfFollowers = followers.size();
-        int numberOfFriends = friends.size();
+    private int followFolks(Set<String> friends,  FollowType type, Collection<String> potentials, int numberOfFriends, int numberOfFollowers) {
+        //int numberOfFollowers = followers.size();
+        //int numberOfFriends = friends.size();
         if (tooMany(numberOfFollowers, numberOfFriends)) {
             log.info("Following too many already.  not following more " + type);
             return 0;
@@ -85,11 +88,9 @@ class FollowerRetriever {
         for (String potentialId : potentials) {
             if (friends.contains(potentialId)) {
                 alreadyFollowed.add(potentialId);
-            }
-            else if (cfg.isBlacklisted(potentialId)) {
+            } else if (cfg.isBlacklisted(potentialId)) {
                 log.info(potentialId + " is blacklisted, will not follow.");
-            }
-            else if (okToFollow(nmbFollowed, numberOfFollowers, numberOfFriends, type)) {
+            } else if (okToFollow(nmbFollowed, numberOfFollowers, numberOfFriends, type)) {
                 try {
                     twitter.createFriendship(potentialId);
                     log.info("followed " + type + ": " + potentialId);
@@ -100,8 +101,7 @@ class FollowerRetriever {
                 catch (TwitterException e) {
                     log.error("Error trying to befriend", e);
                 }
-            }
-            else {
+            } else {
                 log.info("already followed to many people, will not follow more for now.");
                 log.info("BTW: already following posters: " + alreadyFollowed);
                 return nmbFollowed;
