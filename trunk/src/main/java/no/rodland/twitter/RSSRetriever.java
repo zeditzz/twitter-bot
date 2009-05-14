@@ -109,11 +109,11 @@ public class RSSRetriever {
                 log.info(added + " entries added from " + source + " (dropped " + (myEntries.size() - added) + " dups)");
             }
             catch (TwitterException te) {
-                log.info("Failed to fetch the feed:", te);
+                log.error("Failed to fetch the feed:", te);
             }
 
             catch (FeedException fe) {
-                log.info("Failed to parse the feed:", fe);
+                log.error("Failed to parse the feed:", fe);
             }
         }
         return entries;
