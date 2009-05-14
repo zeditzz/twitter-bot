@@ -74,11 +74,13 @@ public class RSSRetriever {
                     String title = posting.getTitle().toLowerCase();
                     if (titleSet.contains(title)) {
                         log.info("removed duplicate (title): " + title + " " + url);
-                    } else {
+                    }
+                    else {
                         titleSet.add(title);
                         if (linkSet.contains(url)) {
                             log.info("removed duplicate (url): " + title + " " + url);
-                        } else {
+                        }
+                        else {
                             added++;
                             linkSet.add(url);
                             entries.add(posting);

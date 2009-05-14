@@ -95,11 +95,13 @@ public class TwitterBot {
                         lastPublished = published;
                     }
                     lastUpdate = published;
-                } else {
+                }
+                else {
                     log.warn("filtered out content - will not post - bad word: " + bad);
                     log.warn(entry);
                 }
-            } else {
+            }
+            else {
                 droppedOld++;
             }
         }
@@ -110,7 +112,8 @@ public class TwitterBot {
     private static void init(String[] args) {
         if (args.length == 1) {
             cfgFile = args[0];
-        } else {
+        }
+        else {
             usage();
             System.exit(2);
         }
