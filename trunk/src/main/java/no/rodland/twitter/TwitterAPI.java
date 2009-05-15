@@ -127,17 +127,28 @@ public class TwitterAPI {
     static List<Tweet> filterTweets(List<Tweet> tweets, String twitterUser) {
         List<Tweet> filteredTweets = new ArrayList<Tweet>();
         int droppedOwn = 0;
+        int droppedReplies = 0;
+        int droppedRT = 0;
+        int droppedVia = 0;
         for (Tweet tweet : tweets) {
+            String tweetUC = tweet.getText().toUpperCase();
             if (twitterUser.equals(tweet.getFromUser())) {
                 droppedOwn++;
+            }
+            else if (tweet.getToUser() != null) {
+                droppedReplies++;
+            }
+            else if (tweetUC.startsWith("RT")) {
+                droppedRT++;
+            }
+            else if (tweetUC.contains("(via @")) {
+                droppedVia++;
             }
             else {
                 filteredTweets.add(tweet);
             }
         }
-        if (droppedOwn > 0) {
-            log.info("Dropped " + droppedOwn + " tweets from user @" + twitterUser);
-        }
+        log.info("Dropped tweets: " + droppedReplies + " replies, " + droppedOwn + " own, " + droppedRT + " retweets, " + droppedVia + " VIAs");
         return filteredTweets;
     }
 
