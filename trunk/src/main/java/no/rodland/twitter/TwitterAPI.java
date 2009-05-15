@@ -141,7 +141,7 @@ public class TwitterAPI {
             else if (tweetUC.startsWith("RT")) {
                 droppedRT++;
             }
-            else if (tweetUC.contains("(via @")) {
+            else if (tweetUC.contains("(VIA @")) {
                 droppedVia++;
             }
             else {
