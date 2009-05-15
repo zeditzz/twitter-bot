@@ -99,6 +99,8 @@ public class TwitterBot {
                 else {
                     log.warn("filtered out content - will not post - bad word: " + bad);
                     log.warn(entry);
+                    System.err.println("filtered out content - will not post - bad word: " + bad);
+                    System.err.println(entry);
                 }
             }
             else {
