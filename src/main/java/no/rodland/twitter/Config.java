@@ -106,11 +106,12 @@ public class Config {
         if (content == null) {
             return null;
         }
-        List badWords = config.getList(CFG_KEY_CONTENT_FILTER);
-        for (Object badWord : badWords) {
-            String word = ((String) badWord).toLowerCase();
-            if (content.toLowerCase().contains(word)) {
-                return word;
+        @SuppressWarnings({"unchecked"})
+        List<String> badWords = config.getList(CFG_KEY_CONTENT_FILTER);
+        content = content.toLowerCase();
+        for (String badWord : badWords) {
+            if (content.contains(badWord)) {
+                return badWord;
             }
         }
         return null;
