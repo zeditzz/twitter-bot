@@ -41,15 +41,15 @@ public class TwitterAPI {
         return getFollowerCount(twitter.verifyCredentials());
     }
 
-    public static int getFriendCount(ExtendedUser user) throws TwitterException {
+    public static int getFriendCount(User user) throws TwitterException {
         return user.getFriendsCount();
     }
 
-    public static int getFollowerCount(ExtendedUser user) throws TwitterException {
+    public static int getFollowerCount(User user) throws TwitterException {
         return user.getFollowersCount();
     }
 
-    public static long getLatestStatusIs(ExtendedUser user) throws TwitterException {
+    public static long getLatestStatusIs(User user) throws TwitterException {
         return user.getStatusId();
     }
 
@@ -67,7 +67,7 @@ public class TwitterAPI {
             paging.setPage(page);
             users = twitter.getFriends(paging);
         }
-        ExtendedUser eUser = twitter.verifyCredentials();
+        User eUser = twitter.verifyCredentials();
         log.info(eUser.getScreenName() + " has " + getFriendCount(eUser) + " friends. (size of users-list: " + returnList.size() + ")");
 
         return returnList;
@@ -87,7 +87,7 @@ public class TwitterAPI {
             paging.setPage(page);
             users = twitter.getFollowers(paging);
         }
-        ExtendedUser eUser = twitter.verifyCredentials();
+        User eUser = twitter.verifyCredentials();
         log.info(eUser.getScreenName() + " has " + getFollowerCount(eUser) + " followers. (size of users-list: " + returnList.size() + ")");
         // Must be a better way (but Array.asList does not seem to work for primitives
         return returnList;

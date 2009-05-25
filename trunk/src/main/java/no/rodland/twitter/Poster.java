@@ -22,7 +22,7 @@ public class Poster {
     public static void main(String[] args) throws TwitterException {
         init(args);
         if (status == null) {
-            status = "@Kampanje - finner ikke linken som ikke funker. Jepp, vet at Aamot skrives slik, men skrivefeilen kom fra en ReTweet.";
+            status = "Simpsons fail: http://failblog.org/2009/05/18/simpsons-fail/";
         }
         post(status);
     }
