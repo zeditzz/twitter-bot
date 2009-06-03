@@ -38,6 +38,12 @@ public class Link {
     }
 
     public static String removeLastSlash(String retString) {
+        if (retString == null) {
+            return null;
+        }
+        if (retString.length() == 0) {
+            return "";
+        }
         if (retString.lastIndexOf(SLASH) == (retString.length() - 1)) {
             return retString.substring(0, (retString.length() - 1));
         }
