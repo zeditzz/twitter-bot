@@ -83,34 +83,48 @@ public class TwitterBot {
 
     private static Date postNewEntries(List<Posting> entries, Twitter twitter, Date lastUpdate) {
         int droppedOld = 0;
+        int droppedBad = 0;
+        int posted = 0;
+        int droppedMaxReached = 0;
         Date lastPublished = lastUpdate;
         for (Posting entry : entries) {
 
             Date published = entry.getUpdated();
-            if (lastUpdate.before(published)) {   // post ALL entries newer than lastPublished
+            if (posted > cfg.getMaxPostingsPrRun()) {
+                droppedMaxReached++;
+            }
+            else if (lastUpdate.before(published)) {   // post ALL entries newer than lastPublished
                 String bad = cfg.isBadContent(entry.getStatus());
                 if (bad == null) {  // not bad words
                     TwitterAPI.post(twitter, entry);
+                    posted++;
                     if (lastPublished.before(published)) {  // only update lastPublished if it's the newest
                         lastPublished = published;
                     }
                     lastUpdate = published;
                 }
                 else {
+                    droppedBad++;
                     log.warn("filtered out content - will not post - bad word: " + bad);
                     log.warn(entry);
                     System.err.println("filtered out content - will not post - bad word: " + bad);
                     System.err.println("entry.getTitle()   = " + entry.getTitle());
                     System.err.println("entry.getSrc()     = " + entry.getSrc());
                     System.err.println("entry.getStatus()  = " + entry.getStatus());
-                    System.err.println("entry.getUpdated() = " + entry.getUpdated());
+                    System.err.println("entry.getUpdated() = " + published);
                 }
             }
             else {
                 droppedOld++;
             }
         }
-        log.info("Dropped " + droppedOld + " posting because they were too old");
+
+        log.info("Got " + entries.size() + " entries");
+        log.info("Posted " + posted);
+        log.info("Dropped " + droppedOld + " entries because they were too old");
+        log.info("Dropped " + droppedBad + " entries because they had bad content");
+        log.info("Dropped " + droppedMaxReached + " entries because max limit pr run was reached");
+
         return lastPublished;
     }
 

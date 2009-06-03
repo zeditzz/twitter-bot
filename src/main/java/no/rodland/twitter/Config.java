@@ -40,6 +40,7 @@ public class Config {
     private static final String CFG_KEY_URLS = "urls";
     private static final String NUM_REPLACE_STRING = "NUMBER_NEWS";
     private static final String CFG_KEY_CONTENT_FILTER = "contentfilter";
+    private static final String CFG_KEY_MAX_POSTINGS_PR_RUN = "MAX_POSTINGS_PR_RUN";
 
     @SuppressWarnings({"UnusedDeclaration"})
     public Config(String fileName) throws ConfigurationException {
@@ -178,5 +179,9 @@ public class Config {
 
     public int getMinTitleLength() {
         return config.getInt(CFG_KEY_MIN_TITLE_LENGTH, 15);
+    }
+
+    public int getMaxPostingsPrRun() {
+        return config.getInt(CFG_KEY_MAX_POSTINGS_PR_RUN, 4);
     }
 }
