@@ -100,7 +100,10 @@ public class TwitterBot {
                     log.warn("filtered out content - will not post - bad word: " + bad);
                     log.warn(entry);
                     System.err.println("filtered out content - will not post - bad word: " + bad);
-                    System.err.println(entry);
+                    System.err.println("entry.getTitle()   = " + entry.getTitle());
+                    System.err.println("entry.getSrc()     = " + entry.getSrc());
+                    System.err.println("entry.getStatus()  = " + entry.getStatus());
+                    System.err.println("entry.getUpdated() = " + entry.getUpdated());
                 }
             }
             else {

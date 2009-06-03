@@ -101,5 +101,8 @@ public class LinkTest {
     public void testRemoveLastSlash() {
         Assert.assertEquals("https://rodland.no", Link.removeLastSlash("https://rodland.no/"));
         Assert.assertEquals("http://rodland.no", Link.removeLastSlash("http://rodland.no/"));
+        Assert.assertEquals("", Link.removeLastSlash("/"));
+        Assert.assertEquals("", Link.removeLastSlash(""));
+        Assert.assertEquals(null, Link.removeLastSlash(null));
     }
 }
