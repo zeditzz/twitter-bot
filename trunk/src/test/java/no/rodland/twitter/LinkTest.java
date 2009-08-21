@@ -1,13 +1,11 @@
 package no.rodland.twitter;
 
 import org.junit.Test;
+
 import junit.framework.Assert;
 
 /**
- * Created by IntelliJ IDEA.
- * User: fmr
- * Date: Apr 29, 2009
- * Time: 10:02:37 PM
+ * Created by IntelliJ IDEA. User: fmr Date: Apr 29, 2009 Time: 10:02:37 PM
  */
 public class LinkTest {
 
@@ -95,6 +93,13 @@ public class LinkTest {
 
     private static void assertSameRemoveParams(String url) {
         Assert.assertEquals(url, Link.removeParams(url));
+    }
+
+    @Test
+    public void testGoogle() {
+        String url = "http://news.google.com/news/url?fd=R&sa=T&url=http%3A%2F%2Fwww.aftenposten.no%2Fbolig%2Fboligokonomi%2Farticle3227664.ece&usg=AFQjCNGMdAYkVoc0_9Lwrm6RcN4r1mqYQw";
+        Link link = new Link(url);
+        Assert.assertEquals("http://www.aftenposten.no/bolig/boligokonomi/article3227664.ece", link.getLink());
     }
 
     @Test

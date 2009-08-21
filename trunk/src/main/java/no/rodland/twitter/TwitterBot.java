@@ -26,7 +26,7 @@ public class TwitterBot {
             Date cfgLastUpdate = cfg.getLastUpdated();
             Twitter twitter = new Twitter(twitterUser, twitterPassword);
             twitter.setSource("web");
-            User user = twitter.getUserDetail(twitterUser);
+            User user = twitter.showUser(twitterUser);
             Date lastUpdate = user.getStatusCreatedAt();
             if (lastUpdate == null) {
                 lastUpdate = new Date(0L);
@@ -107,18 +107,21 @@ public class TwitterBot {
                     droppedBad++;
                     log.warn("filtered out content - will not post - bad word: " + bad);
                     log.warn(entry);
-                    System.err.println("filtered out content - will not post - bad word: " + bad);
-                    System.err.println("entry.getTitle()   = " + entry.getTitle());
-                    System.err.println("entry.getSrc()     = " + entry.getSrc());
-                    System.err.println("entry.getStatus()  = " + entry.getStatus());
-                    System.err.println("entry.getUpdated() = " + published);
+                    // do not send emails for these - they arrive all the time because of finn spamming....
+                    if (!"sov http".equals(bad)) {
+                        System.err.println("filtered out content - will not post - bad word: " + bad);
+                        System.err.println("entry.getTitle()   = " + entry.getTitle());
+                        System.err.println("entry.getSrc()     = " + entry.getSrc());
+                        System.err.println("entry.getStatus()  = " + entry.getStatus());
+                        System.err.println("entry.getUpdated() = " + published);
+                    }
                 }
             }
             else {
                 droppedOld++;
             }
         }
-
+                                                                              
         log.info("Got " + entries.size() + " entries");
         log.info("Posted " + posted);
         log.info("Dropped " + droppedOld + " entries because they were too old");

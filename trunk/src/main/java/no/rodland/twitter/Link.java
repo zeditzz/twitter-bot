@@ -1,15 +1,17 @@
 package no.rodland.twitter;
 
+import org.apache.log4j.Logger;
+
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.net.URLDecoder;
+import java.io.UnsupportedEncodingException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: fmr
- * Date: Apr 29, 2009
- * Time: 8:00:52 PM
+ * Created by IntelliJ IDEA. User: fmr Date: Apr 29, 2009 Time: 8:00:52 PM
  */
 public class Link {
+    private static final Logger log = Logger.getLogger(Link.class);
     private static final Pattern MULTIPLE_URLS = Pattern.compile("(https?://.*)*(https?://.*)");
     private static final Pattern GOOGLE_ENDING = Pattern.compile("([^&]*)&.*");
     private static final String FUNNY_HTTP = "http%3A";
@@ -29,7 +31,13 @@ public class Link {
     }
 
     public static String simplify(String origLink) {
-        String retString = fixFunnyHttp(origLink);
+        String retString = origLink;
+        try {
+            retString = URLDecoder.decode(retString, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            log.error("Unable to decode url: " + origLink, e);
+        }
         retString = removeMulitpleUrls(retString);
         retString = removeParams(retString);
         retString = removeLastSlash(retString);
@@ -54,7 +62,15 @@ public class Link {
         if (url == null) {
             return null;
         }
-        return url.replaceAll(Link.FUNNY_HTTP, Link.NORMAL_HTTP);
+        String decoded = url;
+        try {
+            decoded = URLDecoder.decode(url, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            log.error("Unable to decode url: " + url, e);
+        }
+
+        return decoded;
     }
 
     @Override
