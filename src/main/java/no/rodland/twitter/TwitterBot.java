@@ -60,7 +60,7 @@ public class TwitterBot {
         RateLimitStatus rls = twitter.rateLimitStatus();
         log.info("reset-time in sec = " + rls.getResetTimeInSeconds());
         log.info("rate limit reset = " + rls.getRateLimitReset());
-        log.info("reset-time = " + rls.getDateTime());
+        log.info("reset-time = " + rls.getResetTime());
         log.info("limit = " + rls.getHourlyLimit() + ", remaining calls = " + rls.getRemainingHits());
     }
 
