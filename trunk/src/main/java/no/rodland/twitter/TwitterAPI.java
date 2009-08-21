@@ -57,7 +57,7 @@ public class TwitterAPI {
         Set<String> returnList = new HashSet<String>();
         int page = 1;
         Paging paging = new Paging(page);
-        List<User> users = twitter.getFriends(paging);
+        List<User> users = twitter.getFriendsStatuses(paging);
         while (users.size() > 0) {
             // Must be a better way (but Array.asList does not seem to work for primitives)
             for (User user : users) {
@@ -65,7 +65,7 @@ public class TwitterAPI {
             }
             page++;
             paging.setPage(page);
-            users = twitter.getFriends(paging);
+            users = twitter.getFriendsStatuses(paging);
         }
         User eUser = twitter.verifyCredentials();
         log.info(eUser.getScreenName() + " has " + getFriendCount(eUser) + " friends. (size of users-list: " + returnList.size() + ")");
@@ -78,14 +78,14 @@ public class TwitterAPI {
 
         int page = 1;
         Paging paging = new Paging(page);
-        List<User> users = twitter.getFollowers(paging);
+        List<User> users = twitter.getFollowersStatuses(paging);
         while (users.size() > 0) {
             for (User user : users) {
                 returnList.add(user.getScreenName().toLowerCase());
             }
             page++;
             paging.setPage(page);
-            users = twitter.getFollowers(paging);
+            users = twitter.getFollowersStatuses(paging);
         }
         User eUser = twitter.verifyCredentials();
         log.info(eUser.getScreenName() + " has " + getFollowerCount(eUser) + " followers. (size of users-list: " + returnList.size() + ")");

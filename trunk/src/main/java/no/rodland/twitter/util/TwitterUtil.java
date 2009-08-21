@@ -35,7 +35,7 @@ public class TwitterUtil {
         System.out.println(twitter);
         String userId = twitter.getUserId();
         System.out.println("USER: " + userId);
-        User user = twitter.getUserDetail(TWITTER_USER);
+        User user = twitter.showUser(TWITTER_USER);
         System.out.println("USER-print: " + PrintUtil.print(user));
         System.out.println("USER-DET: " + user);
         System.out.println("USER-ID: " + user.getId());
@@ -43,7 +43,7 @@ public class TwitterUtil {
         System.out.println("USER-Name: " + user.getName());
         System.out.println("USER-lastupd: " + user.getStatusCreatedAt());
 
-        List<User> followers = twitter.getFollowers(TWITTER_USER);
+        List<User> followers = twitter.getFollowersStatuses(TWITTER_USER);
         System.out.println("f: " + followers);
 
         System.out.print("boston AND (");
@@ -51,8 +51,8 @@ public class TwitterUtil {
             System.out.print(follower.getScreenName() + " OR ");
         }
         System.out.println("");
-        System.out.println("FRIENDS: " + twitter.getFriends());
-        System.out.println("FOLLOW: " + twitter.getFollowers());
+        System.out.println("FRIENDS: " + twitter.getFriendsStatuses());
+        System.out.println("FOLLOW: " + twitter.getFollowersStatuses());
 
         // to follow
         //System.out.println(twitter.create("fredrikr"));
