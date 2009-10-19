@@ -1,16 +1,15 @@
 package no.rodland.twitter;
 
-import java.util.*;
-
-import org.apache.log4j.Logger;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: fmr
- * Date: May 6, 2009
- * Time: 10:55:30 AM
+ * Created by IntelliJ IDEA. User: fmr Date: May 6, 2009 Time: 10:55:30 AM
  */
 public class Config {
     private static final Logger log = Logger.getLogger(Config.class);
@@ -41,6 +40,7 @@ public class Config {
     private static final String NUM_REPLACE_STRING = "NUMBER_NEWS";
     private static final String CFG_KEY_CONTENT_FILTER = "contentfilter";
     private static final String CFG_KEY_MAX_POSTINGS_PR_RUN = "MAX_POSTINGS_PR_RUN";
+    private static final String CFG_KEY_NOT_SEND_EMAIL_FOR_THESE_WORDS = "not_email";
 
     @SuppressWarnings({"UnusedDeclaration"})
     public Config(String fileName) throws ConfigurationException {
@@ -118,8 +118,14 @@ public class Config {
         return null;
     }
 
+    public boolean sendEmail(String bad) {
+        boolean doNotSendEmail = config.getList(CFG_KEY_NOT_SEND_EMAIL_FOR_THESE_WORDS).contains(bad);
+        return !doNotSendEmail;
+    }
+
     /**
-     * Constructs a series of RSS-urls based on two lists: one with queries and ne with urls.  A new URL will be created for each pair of these.
+     * Constructs a series of RSS-urls based on two lists: one with queries and ne with urls.  A new URL will be created
+     * for each pair of these.
      *
      * @return a list of ready-to-call RSS URLs.
      */

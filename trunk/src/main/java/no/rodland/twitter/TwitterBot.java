@@ -1,11 +1,17 @@
 package no.rodland.twitter;
 
-import twitter4j.*;
+import twitter4j.RateLimitStatus;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.User;
 
-import java.util.*;
-
-import org.apache.log4j.Logger;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class TwitterBot {
 
@@ -107,8 +113,7 @@ public class TwitterBot {
                     droppedBad++;
                     log.warn("filtered out content - will not post - bad word: " + bad);
                     log.warn(entry);
-                    // do not send emails for these - they arrive all the time because of finn spamming....
-                    if (!"sov http".equals(bad)) {
+                    if (cfg.sendEmail(bad)){
                         System.err.println("filtered out content - will not post - bad word: " + bad);
                         System.err.println("entry.getTitle()   = " + entry.getTitle());
                         System.err.println("entry.getSrc()     = " + entry.getSrc());
@@ -121,7 +126,7 @@ public class TwitterBot {
                 droppedOld++;
             }
         }
-                                                                              
+
         log.info("Got " + entries.size() + " entries");
         log.info("Posted " + posted);
         log.info("Dropped " + droppedOld + " entries because they were too old");
