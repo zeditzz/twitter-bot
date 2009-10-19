@@ -120,6 +120,10 @@ public class TwitterBot {
                         System.err.println("entry.getStatus()  = " + entry.getStatus());
                         System.err.println("entry.getUpdated() = " + published);
                     }
+                    else{
+                        log.warn("not sending emails for this because not-email in cfg");
+
+                    }
                 }
             }
             else {
