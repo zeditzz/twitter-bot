@@ -124,12 +124,14 @@ public class TwitterAPI {
         return postings;
     }
 
-    static List<Tweet> filterTweets(List<Tweet> tweets, String twitterUser) {
+    static List<Tweet> filterTweets(List<Tweet> tweets, String twitterUser, Config cfg) {
         List<Tweet> filteredTweets = new ArrayList<Tweet>();
         int droppedOwn = 0;
         int droppedReplies = 0;
         int droppedRT = 0;
         int droppedVia = 0;
+        int droppedBlacklisted = 0;
+
         for (Tweet tweet : tweets) {
             String tweetUC = tweet.getText().toUpperCase();
             if (twitterUser.equals(tweet.getFromUser())) {
@@ -137,6 +139,9 @@ public class TwitterAPI {
             }
             else if (tweet.getToUser() != null) {
                 droppedReplies++;
+            }
+            else if (cfg.isBlacklisted(tweet.getFromUser())) {
+                droppedBlacklisted++;
             }
             else if (tweetUC.startsWith("RT")) {
                 droppedRT++;
@@ -148,7 +153,7 @@ public class TwitterAPI {
                 filteredTweets.add(tweet);
             }
         }
-        log.info("Dropped tweets: " + droppedReplies + " replies, " + droppedOwn + " own, " + droppedRT + " retweets, " + droppedVia + " VIAs");
+        log.info("Dropped tweets: " + droppedReplies + " replies, " + droppedBlacklisted + " blacklisted, " + droppedOwn + " own, " + droppedRT + " retweets, " + droppedVia + " VIAs");
         return filteredTweets;
     }
 

@@ -93,8 +93,8 @@ public class Config {
         if (potentialTwitterUser == null) {
             return false;
         }
-        List urls = config.getList(CFG_KEY_BLACKLIST);
-        return urls.contains(potentialTwitterUser);
+        List users = config.getList(CFG_KEY_BLACKLIST);
+        return users.contains(potentialTwitterUser);
     }
 
     /**
