@@ -127,7 +127,7 @@ class FollowerRetriever {
     private Set<String> getPosters() {
         Set<String> users = new HashSet<String>();
         List<Tweet> tweets = TwitterAPI.search(queries, twitterUser, cfg.getFollowerHits());
-        tweets = TwitterAPI.filterTweets(tweets, twitterUser);
+        tweets = TwitterAPI.filterTweets(tweets, twitterUser, cfg);
         for (Tweet tweet : tweets) {
             users.add(tweet.getFromUser().toLowerCase());
         }
