@@ -20,7 +20,7 @@ class TwitterRetriever {
 
     public List<Posting> retrieve() {
         List<Tweet> tweets = TwitterAPI.search(queries, twitterUser, cfg);
-        tweets = TwitterAPI.filterTweets(tweets, twitterUser);
+        tweets = TwitterAPI.filterTweets(tweets, twitterUser, cfg);
         List<Posting> postings =  TwitterAPI.getPostings(tweets);
         log.info("got " + postings.size() + " twitter-postings");
         return postings;
