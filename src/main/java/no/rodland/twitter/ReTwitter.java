@@ -21,8 +21,7 @@ public class ReTwitter {
     public static void main(String[] args) throws TwitterException {
         init(args);
 
-        Twitter twitter = new Twitter(twitterUser, twitterPassword);
-        twitter.setSource("web");
+        Twitter twitter = TwitterAPI.getTwitter(twitterUser, twitterPassword);
         try {
             long id = Long.valueOf(statusId);
             TwitterAPI.reTwitter(id, twitter);

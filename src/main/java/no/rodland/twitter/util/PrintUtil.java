@@ -19,13 +19,13 @@ public class PrintUtil {
                 ", url='" + user.getURL() + '\'' +
                 ", isProtected=" + user.isProtected() +
                 ", followersCount=" + user.getFollowersCount() +
-                ", statusCreatedAt=" + user.getStatusCreatedAt() +
-                ", statusId=" + user.getStatusId() +
-                ", statusText='" + user.getStatusText() + '\'' +
-                ", statusSource='" + user.getStatusSource() + '\'' +
-                ", statusInReplyToStatusId=" + user.getStatusInReplyToStatusId() +
-                ", statusInReplyToUserId=" + user.getStatusInReplyToUserId() +
-                ", statusInReplyToScreenName='" + user.getStatusInReplyToScreenName() + '\'' +
+                ", statusCreatedAt=" + user.getStatus().getCreatedAt() +
+                ", statusId=" + user.getStatus().getId() +
+                ", statusText='" + user.getStatus().getText()+ '\'' +
+                ", statusSource='" + user.getStatus().getSource()+ '\'' +
+                ", statusInReplyToStatusId=" + user.getStatus().getInReplyToStatusId() +
+                ", statusInReplyToUserId=" + user.getStatus().getInReplyToUserId() +
+                ", statusInReplyToScreenName='" + user.getStatus().getInReplyToScreenName() + '\'' +
                 '}';
     }
 

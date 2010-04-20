@@ -1,12 +1,16 @@
 package no.rodland.twitter;
 
 import org.apache.log4j.Logger;
+
 import twitter4j.*;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.*;
 
 public class TwitterAPI {
     private static final Logger log = Logger.getLogger(TwitterAPI.class);
+    private static Twitter anonTwitter;
 
     public static String getSearchStringExcludingUser(List<String> queries, String twitterUser) {
         if (queries == null || queries.size() == 0) {
@@ -28,7 +32,7 @@ public class TwitterAPI {
     }
 
     private static Posting getPosting(long tweetId) throws TwitterException {
-        Twitter anonTwitter = new Twitter();
+        Twitter anonTwitter = getAnonTwitter();
         Status status = anonTwitter.showStatus(tweetId);
         return new Posting(status);
     }
@@ -50,22 +54,23 @@ public class TwitterAPI {
     }
 
     public static long getLatestStatusIs(User user) throws TwitterException {
-        return user.getStatusId();
+        return user.getStatus().getId();
     }
 
     public static Set<String> getFriends(Twitter twitter) throws TwitterException {
         Set<String> returnList = new HashSet<String>();
-        int page = 1;
-        Paging paging = new Paging(page);
-        List<User> users = twitter.getFriendsStatuses(paging);
-        while (users.size() > 0) {
-            // Must be a better way (but Array.asList does not seem to work for primitives)
+        PagableResponseList<User> users = null;
+        //Paging paging = new Paging(page);
+        boolean first = true;
+        long next = -1L;
+        while (first || users.hasNext()) {
+            first = false;
+            users = twitter.getFriendsStatuses(next);
+            next = users.getNextCursor();
             for (User user : users) {
                 returnList.add(user.getScreenName().toLowerCase());
             }
-            page++;
-            paging.setPage(page);
-            users = twitter.getFriendsStatuses(paging);
+            log.trace("next friends-counter: " + next);
         }
         User eUser = twitter.verifyCredentials();
         log.info(eUser.getScreenName() + " has " + getFriendCount(eUser) + " friends. (size of users-list: " + returnList.size() + ")");
@@ -76,16 +81,13 @@ public class TwitterAPI {
     public static Set<String> getFollowersIDs(Twitter twitter) throws TwitterException {
         Set<String> returnList = new HashSet<String>();
 
-        int page = 1;
-        Paging paging = new Paging(page);
-        List<User> users = twitter.getFollowersStatuses(paging);
-        while (users.size() > 0) {
+        PagableResponseList<User> users = twitter.getFollowersStatuses(-1L);
+        while (users.hasNext()) {
             for (User user : users) {
                 returnList.add(user.getScreenName().toLowerCase());
             }
-            page++;
-            paging.setPage(page);
-            users = twitter.getFollowersStatuses(paging);
+            long next = users.getNextCursor();
+            users = twitter.getFollowersStatuses(next);
         }
         User eUser = twitter.verifyCredentials();
         log.info(eUser.getScreenName() + " has " + getFollowerCount(eUser) + " followers. (size of users-list: " + returnList.size() + ")");
@@ -98,7 +100,7 @@ public class TwitterAPI {
     }
 
     static List<Tweet> search(List<String> queries, String excludedTwitterUser, int hits) {
-        Twitter anonTwitter = new Twitter();
+        Twitter anonTwitter = getAnonTwitter();
         Query query = new Query(getSearchStringExcludingUser(queries, excludedTwitterUser));
         query.setRpp(hits);
         QueryResult result = null;
@@ -179,6 +181,33 @@ public class TwitterAPI {
 
     public static void reTwitter(long id, Twitter twitter) throws TwitterException {
         post(twitter, getPosting(id));
+    }
+
+    public static Twitter getTwitter(Config cfg) {
+        String twitterUser = cfg.twitterUser;
+        String twitterPassword = cfg.twitterPassword;
+        return getTwitter(twitterUser, twitterPassword);
+    }
+
+    public synchronized static Twitter getAnonTwitter() {
+        if (anonTwitter == null) {
+            anonTwitter = getTwitter(new ConfigurationBuilder());
+        }
+        return anonTwitter;
+    }
+
+    public static Twitter getTwitter(String user, String pw) {
+        ConfigurationBuilder confBuilder = new ConfigurationBuilder();
+        confBuilder.setUser(user);
+        confBuilder.setPassword(pw);
+        return getTwitter(confBuilder);
+    }
+
+    public static Twitter getTwitter(ConfigurationBuilder confBuilder) {
+        confBuilder.setSource("web");
+        Configuration configuration = confBuilder.build();
+        TwitterFactory factory = new TwitterFactory(configuration);
+        return factory.getInstance();
     }
 }
 
