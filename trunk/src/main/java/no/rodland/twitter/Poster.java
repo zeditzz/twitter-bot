@@ -39,8 +39,7 @@ public class Poster {
 
     private static Twitter getTwitter() {
         if (twitter == null) {
-            twitter = new Twitter(twitterUser, twitterPassword);
-            twitter.setSource("web");
+            Twitter twitter = TwitterAPI.getTwitter(twitterUser, twitterPassword);
         }
         return twitter;
     }

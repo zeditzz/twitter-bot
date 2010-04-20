@@ -1,10 +1,5 @@
 package no.rodland.twitter;
 
-import twitter4j.RateLimitStatus;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.User;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
@@ -12,6 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import twitter4j.RateLimitStatus;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.User;
 
 public class TwitterBot {
 
@@ -27,13 +27,12 @@ public class TwitterBot {
         // XXX: should use lastUpdated from cfg-fiel to search SINCE in all searches.
         try {
             cfg = new Config(cfgFile);
-            twitterUser = cfg.twitterUser;
-            String twitterPassword = cfg.twitterPassword;
             Date cfgLastUpdate = cfg.getLastUpdated();
-            Twitter twitter = new Twitter(twitterUser, twitterPassword);
-            twitter.setSource("web");
+
+            Twitter twitter = TwitterAPI.getTwitter(cfg);
+            //twitter.setSource("web");
             User user = twitter.showUser(twitterUser);
-            Date lastUpdate = user.getStatusCreatedAt();
+            Date lastUpdate = user.getStatus().getCreatedAt();
             if (lastUpdate == null) {
                 lastUpdate = new Date(0L);
             }
@@ -63,11 +62,12 @@ public class TwitterBot {
     }
 
     private static void logRateInfo(Twitter twitter) throws TwitterException {
-        RateLimitStatus rls = twitter.rateLimitStatus();
+        RateLimitStatus rls = twitter.getRateLimitStatus();
         log.info("reset-time in sec = " + rls.getResetTimeInSeconds());
-        log.info("rate limit reset = " + rls.getRateLimitReset());
-        log.info("reset-time = " + rls.getResetTime());
-        log.info("limit = " + rls.getHourlyLimit() + ", remaining calls = " + rls.getRemainingHits());
+        log.info("reset-time        = " + rls.getResetTime());
+        log.info("sec to reset      = " + rls.getSecondsUntilReset());
+        log.info("limit             = " + rls.getHourlyLimit());
+        log.info("remaining calls   = " + rls.getRemainingHits());
     }
 
     private static Date callTwitter(Twitter twitter, Date lastUpdate) throws TwitterException {
@@ -113,16 +113,15 @@ public class TwitterBot {
                     droppedBad++;
                     log.warn("filtered out content - will not post - bad word: " + bad);
                     log.warn(entry);
-                    if (cfg.sendEmail(bad)){
+                    if (cfg.sendEmail(bad)) {
                         System.err.println("filtered out content - will not post - bad word: " + bad);
                         System.err.println("entry.getTitle()   = " + entry.getTitle());
                         System.err.println("entry.getSrc()     = " + entry.getSrc());
                         System.err.println("entry.getStatus()  = " + entry.getStatus());
                         System.err.println("entry.getUpdated() = " + published);
                     }
-                    else{
+                    else {
                         log.warn("not sending emails for this because not-email in cfg");
-
                     }
                 }
             }

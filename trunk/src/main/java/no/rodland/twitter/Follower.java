@@ -23,8 +23,7 @@ public class Follower {
     }
 
     private static void follow(String screenName) {
-        Twitter twitter = new Twitter(twitterUser, twitterPassword);
-        twitter.setSource("web");
+        Twitter twitter = TwitterAPI.getTwitter(twitterUser, twitterPassword);
         log.info("follow: " + screenName);
         try {
             log.info(twitter.createFriendship(screenName));

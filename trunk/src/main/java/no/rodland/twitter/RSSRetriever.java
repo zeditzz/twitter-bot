@@ -26,16 +26,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package no.rodland.twitter;
 
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedInput;
-import twitter4j.TwitterException;
-import twitter4j.http.HttpClient;
-import twitter4j.http.Response;
-
-import java.util.*;
-
-import org.apache.log4j.Logger;
+import com.sun.syndication.io.XmlReader;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -47,26 +52,27 @@ public class RSSRetriever {
     private static final Logger log = Logger.getLogger(RSSRetriever.class);
     private static final String HTTP_AGENT = "NetNewsWire/3.1.7 (Mac OS X; http://www.newsgator.com/Individuals/NetNewsWire/)";
     private final List<FeedUrl> feedurls;
-    private final HttpClient http = new HttpClient();
-    // private String fileName;
     private final Set<String> linkSet = new HashSet<String>();   // only posting 1 unique link pr session
     private final Set<String> titleSet = new HashSet<String>();  // only posting 1 unique title pr session
 
     public RSSRetriever(List<FeedUrl> feedUrls) {
+        System.setProperty("http.agent", HTTP_AGENT);
         this.feedurls = feedUrls;
     }
 
     public List<Posting> retrieve() {
         List<Posting> entries = new ArrayList<Posting>();
-        http.setUserAgent(HTTP_AGENT);
         int totalAdded = 0;
         int totalRemoved = 0;
+        SyndFeedInput input = new SyndFeedInput();
         for (FeedUrl feedurl : feedurls) {
             String source = feedurl.getSource();
             log.info("Checking feed from " + source);
             try {
-                Response res = http.get(feedurl.getUrl());
-                List myEntries = new SyndFeedInput().build(res.asDocument()).getEntries();
+                URL feedUrl = new URL(feedurl.getUrl());
+                SyndFeed feed = input.build(new XmlReader(feedUrl));
+                List myEntries = feed.getEntries();
+
                 int added = 0;
                 for (Object myEntry : myEntries) {
                     Posting posting = new Posting((SyndEntry) myEntry, source);
@@ -92,12 +98,14 @@ public class RSSRetriever {
                 totalRemoved += removed;
                 log.info(added + " entries added from " + source + " (dropped " + removed + " dups)");
             }
-            catch (TwitterException te) {
-                log.error("Failed to fetch the feed:", te);
-            }
-
             catch (FeedException fe) {
                 log.error("Failed to parse the feed:", fe);
+            }
+            catch (MalformedURLException e) {
+                log.error("Failed to get the feed - error in url: " + feedurl, e);  //To change body of catch statement use File | Settings | File Templates.
+            }
+            catch (IOException e) {
+                log.error("Failed to get the feed - io: ", e);  //To change body of catch statement use File | Settings | File Templates.
             }
         }
         log.info("A total of " + totalAdded + " entries added and " + totalRemoved + " dropped from " + feedurls.size() + " feeds.");
