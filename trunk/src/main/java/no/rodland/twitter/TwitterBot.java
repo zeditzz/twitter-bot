@@ -16,9 +16,9 @@ import twitter4j.User;
 public class TwitterBot {
 
     static final Logger log = Logger.getLogger(TwitterBot.class);
-    private static String twitterUser;
     private static String cfgFile;
     private static Config cfg;
+    private static String twitterUser;
 
     public static void main(String[] args) {
         log.info("STARTING BOT");
@@ -28,9 +28,8 @@ public class TwitterBot {
         try {
             cfg = new Config(cfgFile);
             Date cfgLastUpdate = cfg.getLastUpdated();
-
+            twitterUser = cfg.twitterUser;
             Twitter twitter = TwitterAPI.getTwitter(cfg);
-            //twitter.setSource("web");
             User user = twitter.showUser(twitterUser);
             Date lastUpdate = user.getStatus().getCreatedAt();
             if (lastUpdate == null) {
