@@ -6,10 +6,7 @@ import twitter4j.Twitter;
 import org.apache.log4j.Logger;
 
 /**
- * Created by IntelliJ IDEA.
- * User: fmr
- * Date: May 6, 2009
- * Time: 10:51:26 AM
+ * Created by IntelliJ IDEA. User: fmr Date: May 6, 2009 Time: 10:51:26 AM
  */
 public class Poster {
     private static final Logger log = Logger.getLogger(Poster.class);
@@ -30,7 +27,8 @@ public class Poster {
     private static void post(String status) throws TwitterException {
         if (status.length() > 140) {
             log.error("Status must not exceed 140 characters. Will exit because it's " + status.length());
-        } else {
+        }
+        else {
             Twitter tw = getTwitter();
             log.info("posting status: " + status);
             log.info(tw.updateStatus(status));
@@ -39,7 +37,7 @@ public class Poster {
 
     private static Twitter getTwitter() {
         if (twitter == null) {
-            Twitter twitter = TwitterAPI.getTwitter(twitterUser, twitterPassword);
+            twitter = TwitterAPI.getTwitter(twitterUser, twitterPassword);
         }
         return twitter;
     }
@@ -48,11 +46,13 @@ public class Poster {
         if (args.length == 2) {
             twitterUser = args[0];
             twitterPassword = args[1];
-        } else if (args.length == 3) {
+        }
+        else if (args.length == 3) {
             twitterUser = args[0];
             twitterPassword = args[1];
             status = args[2];
-        } else {
+        }
+        else {
             usage();
             System.exit(2);
         }
@@ -63,5 +63,4 @@ public class Poster {
         System.out.println("usage 1: java no.rodland.twitter.Poster <twitteruser> <twitterpassword>");
         System.out.println("usage 2: java no.rodland.twitter.Poster <twitteruser> <twitterpassword> \"<MSG>\"");
     }
-
 }
