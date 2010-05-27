@@ -1,35 +1,30 @@
 package no.rodland.twitter;
 
-import twitter4j.TwitterException;
-import twitter4j.Twitter;
-
 import org.apache.log4j.Logger;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
 
 /**
  * Created by IntelliJ IDEA. User: fmr Date: May 6, 2009 Time: 10:51:26 AM
  */
-public class Poster {
-    private static final Logger log = Logger.getLogger(Poster.class);
+public class Deleter {
+    private static final Logger log = Logger.getLogger(Deleter.class);
     private static Twitter twitter;
 
     private static String twitterUser;
     private static String twitterPassword;
-    private static String status;
+    private static long statusId;
 
     public static void main(String[] args) throws TwitterException {
         init(args);
-        post(status);
+        delete(statusId);
     }
 
-    private static void post(String status) throws TwitterException {
-        if (status.length() > 140) {
-            log.error("Status must not exceed 140 characters. Will exit because it's " + status.length());
-        }
-        else {
-            Twitter tw = getTwitter();
-            log.info("posting status: " + status);
-            log.info(tw.updateStatus(status));
-        }
+    private static void delete(long id) throws TwitterException {
+        Twitter tw = getTwitter();
+        log.info("deleting status: " + id);
+        log.info(tw.destroyStatus(id));
     }
 
     private static Twitter getTwitter() {
@@ -43,7 +38,7 @@ public class Poster {
         if (args.length == 3) {
             twitterUser = args[0];
             twitterPassword = args[1];
-            status = args[2];
+            statusId = Long.valueOf(args[2]);
         }
         else {
             usage();
@@ -52,7 +47,7 @@ public class Poster {
     }
 
     private static void usage() {
-        System.out.println("Twitter poster");
-        System.out.println("usage 2: java no.rodland.twitter.Poster <twitteruser> <twitterpassword> \"<MSG>\"");
+        System.out.println("Twitter Deleter");
+        System.out.println("usage 1: java no.rodland.twitter.Deleter <twitteruser> <twitterpassword> statusId");
     }
 }
