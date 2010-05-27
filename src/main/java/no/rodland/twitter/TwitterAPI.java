@@ -180,7 +180,9 @@ public class TwitterAPI {
     }
 
     public static void reTwitter(long id, Twitter twitter) throws TwitterException {
-        post(twitter, getPosting(id));
+        log.info("retweeting status " + id);
+        twitter.retweetStatus(id);
+//         post(twitter, getPosting(id));
     }
 
     public static Twitter getTwitter(Config cfg) {
