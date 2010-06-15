@@ -23,14 +23,14 @@ public class TwitterBot {
     public static void main(String[] args) {
         log.info("STARTING BOT");
         init(args);
-
+        User user = null;
         // XXX: should use lastUpdated from cfg-fiel to search SINCE in all searches.
         try {
             cfg = new Config(cfgFile);
             Date cfgLastUpdate = cfg.getLastUpdated();
             twitterUser = cfg.twitterUser;
             Twitter twitter = TwitterAPI.getTwitter(cfg);
-            User user = twitter.showUser(twitterUser);
+            user = twitter.showUser(twitterUser);
             Date lastUpdate = user.getStatus().getCreatedAt();
             if (lastUpdate == null) {
                 lastUpdate = new Date(0L);
@@ -50,14 +50,21 @@ public class TwitterBot {
             log.info("Latest status is now: " + lastUpdate);
         }
         catch (ConfigurationException e) {
-            log.fatal("config not loaded for file: " + cfgFile, e);
-            System.exit(3);
+            handleFatalException("config not loaded for file: " + cfgFile, e);
         }
         catch (TwitterException e) {
-            log.fatal("TwitterException caught: ", e);
-            System.exit(4);
+            handleFatalException("TwitterException caught", e);
+        }
+        catch (Exception e) {
+            handleFatalException("Exception caught, User: " + user, e);
         }
         log.info("ENDING BOT");
+    }
+
+    private static void handleFatalException(String msg, Exception e) {
+        log.fatal(msg, e);
+        System.err.println(msg);
+        e.printStackTrace(System.err);
     }
 
     private static void logRateInfo(Twitter twitter) throws TwitterException {
