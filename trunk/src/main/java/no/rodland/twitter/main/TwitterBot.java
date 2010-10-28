@@ -19,7 +19,7 @@ public class TwitterBot {
     private static Config cfg;
     private static String twitterUser;
     @SuppressWarnings({ "FieldCanBeLocal" })
-    private static boolean actuallyPost = false;
+    private static boolean actuallyPost = true;
 
     public static void main(String[] args) {
         log.info("STARTING BOT");
