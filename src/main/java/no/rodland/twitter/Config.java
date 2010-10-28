@@ -15,8 +15,8 @@ public class Config {
     private static final Logger log = Logger.getLogger(Config.class);
     @SuppressWarnings({"FieldCanBeLocal", "MismatchedQueryAndUpdateOfCollection"})
 
-    public String twitterUser;
-    public String twitterPassword;
+//    public String twitterUser;
+//    public String twitterPassword;
 
     private PropertiesConfiguration config;
 
@@ -42,13 +42,18 @@ public class Config {
     private static final String CFG_KEY_MAX_POSTINGS_PR_RUN = "MAX_POSTINGS_PR_RUN";
     private static final String CFG_KEY_NOT_SEND_EMAIL_FOR_THESE_WORDS = "not_email";
 
+    private static final String CFG_KEY_CONSUMER_KEY = "consumer_key";
+    private static final String CFG_KEY_CONSUMER_KEY_SECRET = "consumer_key_secret";
+    private static final String CFG_KEY_ACCESS_TOKEN = "access_token";
+    private static final String CFG_KEY_ACCESS_TOKEN_SECRET = "access_token_secret";
+
     @SuppressWarnings({"UnusedDeclaration"})
     public Config(String fileName) throws ConfigurationException {
         log.info("Loading properties from " + fileName);
         config = new PropertiesConfiguration(fileName);
 
-        twitterUser = config.getString(CFG_KEY_TWITTERUSER);
-        twitterPassword = config.getString(CFG_KEY_TWITTERPASSWORD);
+//        twitterUser = config.getString(CFG_KEY_TWITTERUSER);
+//        twitterPassword = config.getString(CFG_KEY_TWITTERPASSWORD);
     }
 
     public void update() {
@@ -59,18 +64,19 @@ public class Config {
         config.setProperty(CFG_KEY_LASTUPDATED, lastUpdated.getTime());
         log.info("setting last updated in " + config.getFileName() + " to " + config.getLong(CFG_KEY_LASTUPDATED));
         config.clearProperty("norske_bostaver");
-        config.addProperty("norske_bostaver", "ae: æ");
-        config.addProperty("norske_bostaver", "oe: ø");
-        config.addProperty("norske_bostaver", "aa: å");
-        config.addProperty("norske_bostaver", "AE: Æ");
-        config.addProperty("norske_bostaver", "OE: Ø");
-        config.addProperty("norske_bostaver", "AA: Å");
+        config.addProperty("norske_bostaver", "ae: ÔøΩ");
+        config.addProperty("norske_bostaver", "oe: ÔøΩ");
+        config.addProperty("norske_bostaver", "aa: ÔøΩ");
+        config.addProperty("norske_bostaver", "AE: ÔøΩ");
+        config.addProperty("norske_bostaver", "OE: ÔøΩ");
+        config.addProperty("norske_bostaver", "AA: ÔøΩ");
 
         try {
             config.save();
         }
         catch (ConfigurationException e) {
-            log.error("ERROR setting last updated in " + config.getFileName() + " to " + config.getLong(CFG_KEY_LASTUPDATED), e);
+            log.error("ERROR setting last updated in " + config.getFileName() + " to " + config.getLong(
+                    CFG_KEY_LASTUPDATED), e);
         }
     }
 
@@ -189,5 +195,21 @@ public class Config {
 
     public int getMaxPostingsPrRun() {
         return config.getInt(CFG_KEY_MAX_POSTINGS_PR_RUN, 4);
+    }
+
+    public String getConsumerKey() {
+        return config.getString(CFG_KEY_CONSUMER_KEY);
+    }
+
+    public String getConsumerKeySecret() {
+        return config.getString(CFG_KEY_CONSUMER_KEY_SECRET);
+    }
+
+    public String getAccessToken() {
+        return config.getString(CFG_KEY_ACCESS_TOKEN);
+    }
+
+    public String getAccessTokenSecret() {
+        return config.getString(CFG_KEY_ACCESS_TOKEN_SECRET);
     }
 }
