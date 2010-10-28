@@ -9,6 +9,9 @@
     <logger name="twitter4j.internal.http.HttpClientImpl">
         <level value="info"/>
     </logger>
+    <logger name="twitter4j.http.OAuthAuthorization">
+        <level value="info"/>
+    </logger>
     <root>
         <priority value="debug"/>
         <appender-ref ref="stdout"/>
