@@ -1,24 +1,24 @@
 package no.rodland.twitter.util;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import no.rodland.twitter.TwitterAPI;
 import twitter4j.*;
-
-import java.util.List;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA. User: fmr Date: May 4, 2009 Time: 11:53:17 AM
  */
-@SuppressWarnings({"WeakerAccess", "UnusedDeclaration"})
+@SuppressWarnings({ "WeakerAccess", "UnusedDeclaration" })
 public class TwitterUtil {
-    private static final String TWITTER_USER = "";
-    private static final String TWITTER_PASSWORD = "";
 
-    @SuppressWarnings({})
+    private static OAuth oAuth = new OAuth("", "", "", "");
+
+    @SuppressWarnings({ })
     public static void print() throws TwitterException {
         Twitter anonTwitter = TwitterAPI.getAnonTwitter();
-        Twitter twitter = TwitterAPI.getTwitter(TWITTER_USER, TWITTER_PASSWORD);
+        Twitter twitter = TwitterAPI.getAuthTwitter(oAuth);
         //Twitter twitter = new TwitterFactory().getInstance(TWITTER_USER, TWITTER_PASSWORD);
         Query query = new Query("cnn.com");
         query.setRpp(30);
@@ -34,7 +34,7 @@ public class TwitterUtil {
         System.out.println(twitter);
         String userId = twitter.getScreenName();
         System.out.println("USER: " + userId);
-        User user = twitter.showUser(TWITTER_USER);
+        User user = twitter.showUser(twitter.getScreenName());
         System.out.println("USER-print: " + PrintUtil.print(user));
         System.out.println("USER-DET: " + user);
         System.out.println("USER-ID: " + user.getId());
@@ -42,7 +42,7 @@ public class TwitterUtil {
         System.out.println("USER-Name: " + user.getName());
         System.out.println("USER-lastupd: " + user.getStatus().getCreatedAt());
 
-        List<User> followers = twitter.getFollowersStatuses(TWITTER_USER);
+        List<User> followers = twitter.getFollowersStatuses(twitter.getScreenName());
         System.out.println("f: " + followers);
 
         Set<String> list = TwitterAPI.getFriends(twitter);

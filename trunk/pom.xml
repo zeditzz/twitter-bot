@@ -78,7 +78,7 @@
                         </descriptorRefs>
                         <archive>
                             <manifest>
-                                <mainClass>no.rodland.twitter.TwitterBot</mainClass>
+                                <mainClass>no.rodland.twitter.main.TwitterBot</mainClass>
                             </manifest>
                         </archive>
                         <tarLongFileMode>gnu</tarLongFileMode>

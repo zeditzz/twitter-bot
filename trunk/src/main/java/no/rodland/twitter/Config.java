@@ -1,22 +1,20 @@
 package no.rodland.twitter;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.log4j.Logger;
 
 /**
  * Created by IntelliJ IDEA. User: fmr Date: May 6, 2009 Time: 10:55:30 AM
  */
 public class Config {
-    private static final Logger log = Logger.getLogger(Config.class);
-    @SuppressWarnings({"FieldCanBeLocal", "MismatchedQueryAndUpdateOfCollection"})
 
-//    public String twitterUser;
-//    public String twitterPassword;
+    private static final Logger log = Logger.getLogger(Config.class);
+    public static final Config NULL_CONFIG = new Config();
 
     private PropertiesConfiguration config;
 
@@ -47,13 +45,20 @@ public class Config {
     private static final String CFG_KEY_ACCESS_TOKEN = "access_token";
     private static final String CFG_KEY_ACCESS_TOKEN_SECRET = "access_token_secret";
 
-    @SuppressWarnings({"UnusedDeclaration"})
-    public Config(String fileName) throws ConfigurationException {
-        log.info("Loading properties from " + fileName);
-        config = new PropertiesConfiguration(fileName);
+    private Config() {
+        config = new PropertiesConfiguration();
+    }
 
-//        twitterUser = config.getString(CFG_KEY_TWITTERUSER);
-//        twitterPassword = config.getString(CFG_KEY_TWITTERPASSWORD);
+    @SuppressWarnings({ "UnusedDeclaration" })
+    public Config(String fileName) {
+        log.info("Loading properties from " + fileName);
+        try {
+            config = new PropertiesConfiguration(fileName);
+        }
+        catch (ConfigurationException e) {
+            log.error("Error loading config - exiting", e);
+            System.exit(1);
+        }
     }
 
     public void update() {
@@ -76,7 +81,7 @@ public class Config {
         }
         catch (ConfigurationException e) {
             log.error("ERROR setting last updated in " + config.getFileName() + " to " + config.getLong(
-                    CFG_KEY_LASTUPDATED), e);
+                CFG_KEY_LASTUPDATED), e);
         }
     }
 
@@ -85,12 +90,12 @@ public class Config {
         return new Date(time);
     }
 
-    @SuppressWarnings({"unchecked"})
-    List<String> getTwitterQueries() {
+    @SuppressWarnings({ "unchecked" })
+    public List<String> getTwitterQueries() {
         return config.getList(CFG_KEY_TWITTER_QUERY);
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     List<String> getFollowerQueries() {
         return config.getList(CFG_KEY_FOLLOWER_QUERY);
     }
@@ -113,7 +118,7 @@ public class Config {
         if (content == null) {
             return null;
         }
-        @SuppressWarnings({"unchecked"})
+        @SuppressWarnings({ "unchecked" })
         List<String> badWords = config.getList(CFG_KEY_CONTENT_FILTER);
         content = content.toLowerCase();
         for (String badWord : badWords) {
@@ -135,7 +140,7 @@ public class Config {
      *
      * @return a list of ready-to-call RSS URLs.
      */
-    List<FeedUrl> getFeedUrls() {
+    public List<FeedUrl> getFeedUrls() {
         List urls = config.getList(CFG_KEY_URLS);
         List queries = config.getList(CFG_KEY_RSS_QUERY);
         List sites = config.getList(CFG_KEY_SITES);
@@ -156,9 +161,9 @@ public class Config {
     @Override
     public String toString() {
         return "getTwitterQueries() = " + getTwitterQueries() + "\n" +
-                "getFeedUrls() = " + getFeedUrls() + "\n" +
-                "getFollowerQueries() = " + getFollowerQueries() + "\n" +
-                "getLastUpdated() = " + getLastUpdated();
+               "getFeedUrls() = " + getFeedUrls() + "\n" +
+               "getFollowerQueries() = " + getFollowerQueries() + "\n" +
+               "getLastUpdated() = " + getLastUpdated();
     }
 
     public double getFollowFactor() {

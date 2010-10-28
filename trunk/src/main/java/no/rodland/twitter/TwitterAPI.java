@@ -1,16 +1,27 @@
 package no.rodland.twitter;
 
-import org.apache.log4j.Logger;
+import java.util.*;
 
+import no.rodland.twitter.util.OAuth;
+import org.apache.log4j.Logger;
 import twitter4j.*;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
-import java.util.*;
-
 public class TwitterAPI {
+
     private static final Logger log = Logger.getLogger(TwitterAPI.class);
     private static Twitter anonTwitter;
+    private static Twitter authTwitter;
+    static Config config;
+
+    public static void setConfig(Config config) {
+        TwitterAPI.config = config;
+    }
+
+    public static void setNullConfig() {
+        setConfig(Config.NULL_CONFIG);
+    }
 
     public static String getSearchStringExcludingUser(List<String> queries, String twitterUser) {
         if (queries == null || queries.size() == 0) {
@@ -95,14 +106,12 @@ public class TwitterAPI {
         return returnList;
     }
 
-    static List<Tweet> search(List<String> queries, String twitterUser, Config cfg) {
-        return search(queries, twitterUser, cfg.getTwitterHits());
-    }
-
-    static List<Tweet> search(List<String> queries, String excludedTwitterUser, int hits) {
+    public static List<Tweet> search(List<String> queries, String excludedTwitterUser) {
+        checkConfig();
         Twitter anonTwitter = getAnonTwitter();
         Query query = new Query(getSearchStringExcludingUser(queries, excludedTwitterUser));
-        query.setRpp(hits);
+
+        query.setRpp(config.getTwitterHits());
         QueryResult result = null;
         try {
             result = anonTwitter.search(query);
@@ -126,7 +135,8 @@ public class TwitterAPI {
         return postings;
     }
 
-    static List<Tweet> filterTweets(List<Tweet> tweets, String twitterUser, Config cfg) {
+    static List<Tweet> filterTweets(List<Tweet> tweets, String twitterUser) {
+        checkConfig();
         List<Tweet> filteredTweets = new ArrayList<Tweet>();
         int droppedOwn = 0;
         int droppedReplies = 0;
@@ -142,7 +152,7 @@ public class TwitterAPI {
             else if (tweet.getToUser() != null) {
                 droppedReplies++;
             }
-            else if (cfg.isBlacklisted(tweet.getFromUser())) {
+            else if (config.isBlacklisted(tweet.getFromUser())) {
                 droppedBlacklisted++;
             }
             else if (tweetUC.startsWith("RT")) {
@@ -159,7 +169,7 @@ public class TwitterAPI {
         return filteredTweets;
     }
 
-    static void post(Twitter twitter, Posting entry) {
+    public static void post(Twitter twitter, Posting entry) {
         String status = entry.getStatus();
 
         log.info("New entry published at " + entry.getUpdated());
@@ -185,31 +195,74 @@ public class TwitterAPI {
 //         post(twitter, getPosting(id));
     }
 
-    public static Twitter getTwitter(Config cfg) {
-        String twitterUser = cfg.twitterUser;
-        String twitterPassword = cfg.twitterPassword;
-        return getTwitter(twitterUser, twitterPassword);
+    public static Twitter getAuthTwitter() {
+        checkConfig();
+        OAuth oAuth = new OAuth(config.getConsumerKey(),
+                                config.getConsumerKeySecret(),
+                                config.getAccessToken(),
+                                config.getAccessTokenSecret());
+        return getAuthTwitter(oAuth);
+    }
+
+    public static Twitter getAuthTwitter(OAuth oAuth) {
+        final String oAuthConsumerKey = oAuth.getConsumerKey();
+        final String oAuthConsumerSecret = oAuth.getConsumerKeySecret();
+        final String accessToken = oAuth.getAccessKey();
+        final String accessTokenSecret = oAuth.getAccessKeySecret();
+        return getAuthTwitter(oAuthConsumerKey, oAuthConsumerSecret, accessToken, accessTokenSecret);
+    }
+
+    public static Twitter getAuthTwitter(String oAuthConsumerKey,
+                                         String oAuthConsumerSecret,
+                                         String authAccessToken,
+                                         String tokenSecret) {
+        if (authTwitter == null) {
+            ConfigurationBuilder confBuilder = new ConfigurationBuilder();
+            confBuilder.setOAuthConsumerKey(oAuthConsumerKey);
+            confBuilder.setOAuthConsumerSecret(oAuthConsumerSecret);
+            confBuilder.setOAuthAccessToken(authAccessToken);
+            confBuilder.setOAuthAccessTokenSecret(tokenSecret);
+            authTwitter = getTwitter(confBuilder);
+        }
+        return authTwitter;
     }
 
     public synchronized static Twitter getAnonTwitter() {
+        checkConfig();
+        OAuth oAuth = new OAuth(config.getConsumerKey(),
+                                config.getConsumerKeySecret());
+        return getAnonTwitter(oAuth);
+    }
+
+    public static Twitter getAnonTwitter(OAuth oAuth) {
+        final String oAuthConsumerKey = oAuth.getConsumerKey();
+        final String oAuthConsumerSecret = oAuth.getConsumerKeySecret();
+        return getAnonTwitter(oAuthConsumerKey, oAuthConsumerSecret);
+    }
+
+    public static Twitter getAnonTwitter(String oAuthConsumerKey, String oAuthConsumerSecret) {
+
         if (anonTwitter == null) {
-            anonTwitter = getTwitter(new ConfigurationBuilder());
+            ConfigurationBuilder confBuilder = new ConfigurationBuilder();
+            confBuilder.setOAuthConsumerKey(oAuthConsumerKey);
+            confBuilder.setOAuthConsumerSecret(oAuthConsumerSecret);
+            anonTwitter = getTwitter(confBuilder);
         }
         return anonTwitter;
     }
 
-    public static Twitter getTwitter(String user, String pw) {
-        ConfigurationBuilder confBuilder = new ConfigurationBuilder();
-        confBuilder.setUser(user);
-        confBuilder.setPassword(pw);
-        return getTwitter(confBuilder);
-    }
-
-    public static Twitter getTwitter(ConfigurationBuilder confBuilder) {
+    private static Twitter getTwitter(ConfigurationBuilder confBuilder) {
         confBuilder.setSource("web");
         Configuration configuration = confBuilder.build();
         TwitterFactory factory = new TwitterFactory(configuration);
         return factory.getInstance();
+    }
+
+    private static void checkConfig() {
+        if (config == null) {
+            System.err.println("Config not correctly set up. exiting");
+            System.exit(3);
+        }
     }
 }
 

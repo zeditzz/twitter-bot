@@ -1,13 +1,12 @@
-package no.rodland.twitter;
-
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
+package no.rodland.twitter.main;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import no.rodland.twitter.*;
+import org.apache.log4j.Logger;
 import twitter4j.RateLimitStatus;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -19,17 +18,20 @@ public class TwitterBot {
     private static String cfgFile;
     private static Config cfg;
     private static String twitterUser;
+    @SuppressWarnings({ "FieldCanBeLocal" })
+    private static boolean actuallyPost = false;
 
     public static void main(String[] args) {
         log.info("STARTING BOT");
         init(args);
         User user = null;
-        // XXX: should use lastUpdated from cfg-fiel to search SINCE in all searches.
+        // XXX: should use lastUpdated from cfg-file to search SINCE in all searches.
         try {
             cfg = new Config(cfgFile);
+            TwitterAPI.setConfig(cfg);
             Date cfgLastUpdate = cfg.getLastUpdated();
-            twitterUser = cfg.twitterUser;
-            Twitter twitter = TwitterAPI.getTwitter(cfg);
+            Twitter twitter = TwitterAPI.getAuthTwitter();
+            twitterUser = twitter.getScreenName();
             user = twitter.showUser(twitterUser);
             Date lastUpdate = user.getStatus().getCreatedAt();
             if (lastUpdate == null) {
@@ -48,9 +50,6 @@ public class TwitterBot {
             logRateInfo(twitter);
             cfg.update(lastUpdate);
             log.info("Latest status is now: " + lastUpdate);
-        }
-        catch (ConfigurationException e) {
-            handleFatalException("config not loaded for file: " + cfgFile, e);
         }
         catch (TwitterException e) {
             handleFatalException("TwitterException caught", e);
@@ -90,7 +89,12 @@ public class TwitterBot {
         TwitterRetriever tr = new TwitterRetriever(cfg.getTwitterQueries(), twitterUser, cfg);
         postings.addAll(tr.retrieve());
         Collections.sort(postings);
-        return postNewEntries(postings, twitter, lastUpdate);
+        Date date = new Date();
+
+        if (actuallyPost) {
+            date = postNewEntries(postings, twitter, lastUpdate);
+        }
+        return date;
     }
 
     private static Date postNewEntries(List<Posting> entries, Twitter twitter, Date lastUpdate) {
@@ -157,6 +161,6 @@ public class TwitterBot {
 
     private static void usage() {
         System.out.println("Twitter news bot");
-        System.out.println("usage: java no.rodland.twitter.TwitterBot <file.properties>");
+        System.out.println("usage: java no.rodland.twitter.main.TwitterBot <file.properties>");
     }
 }

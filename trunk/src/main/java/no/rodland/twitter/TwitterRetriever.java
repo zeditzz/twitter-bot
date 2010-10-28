@@ -1,12 +1,12 @@
 package no.rodland.twitter;
 
-import twitter4j.*;
-
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import twitter4j.Tweet;
 
-class TwitterRetriever {
+public class TwitterRetriever {
+
     private static final Logger log = Logger.getLogger(TwitterRetriever.class);
     private final List<String> queries;
     private final String twitterUser;
@@ -19,11 +19,11 @@ class TwitterRetriever {
     }
 
     public List<Posting> retrieve() {
-        List<Tweet> tweets = TwitterAPI.search(queries, twitterUser, cfg);
-        tweets = TwitterAPI.filterTweets(tweets, twitterUser, cfg);
-        List<Posting> postings =  TwitterAPI.getPostings(tweets);
+        TwitterAPI.setConfig(cfg);
+        List<Tweet> tweets = TwitterAPI.search(queries, twitterUser);
+        tweets = TwitterAPI.filterTweets(tweets, twitterUser);
+        List<Posting> postings = TwitterAPI.getPostings(tweets);
         log.info("got " + postings.size() + " twitter-postings");
         return postings;
     }
-
 }
