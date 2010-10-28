@@ -1,4 +1,4 @@
-package no.rodland.twitter;
+package no.rodland.twitter.main;
 
 import java.io.BufferedReader;
 import java.io.IOException;

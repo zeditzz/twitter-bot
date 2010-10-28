@@ -1,12 +1,14 @@
 package no.rodland.twitter;
 
-import twitter4j.*;
-
 import java.util.*;
 
 import org.apache.log4j.Logger;
+import twitter4j.Tweet;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
 
-class FollowerRetriever {
+public class FollowerRetriever {
+
     private static final Logger log = Logger.getLogger(FollowerRetriever.class);
     private final List<String> queries;
     private final Config cfg;
@@ -14,6 +16,7 @@ class FollowerRetriever {
     private Twitter twitter;
 
     private enum FollowType {
+
         POSTERS, FOLLOWERS;
 
         public String toString() {
@@ -48,14 +51,23 @@ class FollowerRetriever {
         if (numerbNew < 1) {
             log.info("No more room for new friends for now.");
             return 0;
-        } else {
+        }
+        else {
             log.info("Should be able to follow " + numerbNew + " new friends.");
         }
 
-        int followedPosters = followFolks(friends, FollowType.POSTERS, getPosters(), numberOfFriends, numberOfFollowers);
+        int followedPosters = followFolks(friends,
+                                          FollowType.POSTERS,
+                                          getPosters(),
+                                          numberOfFriends,
+                                          numberOfFollowers);
         numberOfFriends += followedPosters;
         // check (again) that the limit isn't reached
-        int followedFollowers = followFolks(friends, FollowType.FOLLOWERS, followers, numberOfFriends, numberOfFollowers);
+        int followedFollowers = followFolks(friends,
+                                            FollowType.FOLLOWERS,
+                                            followers,
+                                            numberOfFriends,
+                                            numberOfFollowers);
 
         log.info("followed " + followedPosters + " posters and " + followedFollowers + " friends");
         return followedFollowers + followedPosters;
@@ -76,7 +88,11 @@ class FollowerRetriever {
         return destroyed.size();
     }
 
-    private int followFolks(Set<String> friends,  FollowType type, Collection<String> potentials, int numberOfFriends, int numberOfFollowers) {
+    private int followFolks(Set<String> friends,
+                            FollowType type,
+                            Collection<String> potentials,
+                            int numberOfFriends,
+                            int numberOfFollowers) {
         //int numberOfFollowers = followers.size();
         //int numberOfFriends = friends.size();
         if (tooMany(numberOfFollowers, numberOfFriends)) {
@@ -88,9 +104,11 @@ class FollowerRetriever {
         for (String potentialId : potentials) {
             if (friends.contains(potentialId)) {
                 alreadyFollowed.add(potentialId);
-            } else if (cfg.isBlacklisted(potentialId)) {
+            }
+            else if (cfg.isBlacklisted(potentialId)) {
                 log.info(potentialId + " is blacklisted, will not follow.");
-            } else if (okToFollow(nmbFollowed, numberOfFollowers, numberOfFriends, type)) {
+            }
+            else if (okToFollow(nmbFollowed, numberOfFollowers, numberOfFriends, type)) {
                 try {
                     twitter.createFriendship(potentialId);
                     log.info("followed " + type + ": " + potentialId);
@@ -101,7 +119,8 @@ class FollowerRetriever {
                 catch (TwitterException e) {
                     log.error("Error trying to befriend", e);
                 }
-            } else {
+            }
+            else {
                 log.info("already followed to many people, will not follow more for now.");
                 log.info("BTW: already following posters: " + alreadyFollowed);
                 return nmbFollowed;
@@ -126,8 +145,9 @@ class FollowerRetriever {
 
     private Set<String> getPosters() {
         Set<String> users = new HashSet<String>();
-        List<Tweet> tweets = TwitterAPI.search(queries, twitterUser, cfg.getFollowerHits());
-        tweets = TwitterAPI.filterTweets(tweets, twitterUser, cfg);
+        TwitterAPI.setConfig(cfg);
+        List<Tweet> tweets = TwitterAPI.search(queries, twitterUser);
+        tweets = TwitterAPI.filterTweets(tweets, twitterUser);
         for (Tweet tweet : tweets) {
             users.add(tweet.getFromUser().toLowerCase());
         }
