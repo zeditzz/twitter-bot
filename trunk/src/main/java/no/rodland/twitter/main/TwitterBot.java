@@ -1,12 +1,18 @@
 package no.rodland.twitter.main;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import no.rodland.twitter.*;
-import org.apache.log4j.Logger;
+import no.rodland.twitter.Config;
+import no.rodland.twitter.FollowerRetriever;
+import no.rodland.twitter.Posting;
+import no.rodland.twitter.RSSRetriever;
+import no.rodland.twitter.TwitterAPI;
+import no.rodland.twitter.TwitterRetriever;
 import twitter4j.RateLimitStatus;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -18,8 +24,8 @@ public class TwitterBot {
     private static String cfgFile;
     private static Config cfg;
     private static String twitterUser;
-    @SuppressWarnings({ "FieldCanBeLocal" })
-    private static boolean actuallyPost = true;
+
+    @SuppressWarnings({"FieldCanBeLocal"})
 
     public static void main(String[] args) {
         log.info("STARTING BOT");
@@ -32,6 +38,7 @@ public class TwitterBot {
             Date cfgLastUpdate = cfg.getLastUpdated();
             Twitter twitter = TwitterAPI.getAuthTwitter();
             twitterUser = twitter.getScreenName();
+            boolean actuallyPost = cfg.getActuallyPost();
             user = twitter.showUser(twitterUser);
             Date lastUpdate = user.getStatus().getCreatedAt();
             if (lastUpdate == null) {
@@ -45,7 +52,7 @@ public class TwitterBot {
 
             log.info("Looking for entries newer than " + lastUpdate + " for " + twitterUser);
 
-            lastUpdate = callTwitter(twitter, lastUpdate);
+            lastUpdate = callTwitter(twitter, lastUpdate, actuallyPost);
 
             logRateInfo(twitter);
             cfg.update(lastUpdate);
@@ -75,29 +82,30 @@ public class TwitterBot {
         log.info("remaining calls   = " + rls.getRemainingHits());
     }
 
-    private static Date callTwitter(Twitter twitter, Date lastUpdate) throws TwitterException {
-        Date lastPublished = retrieveAndPost(twitter, lastUpdate);
+    private static Date callTwitter(Twitter twitter,
+                                    Date lastUpdate,
+                                    final boolean actuallyPost) throws TwitterException {
+        Date lastPublished = retrieveAndPost(twitter, lastUpdate, actuallyPost);
         FollowerRetriever followerRetriever = new FollowerRetriever(twitter, cfg);
         followerRetriever.followNew();
         followerRetriever.unfollowBlackList();
         return lastPublished;
     }
 
-    private static Date retrieveAndPost(Twitter twitter, Date lastUpdate) {
+    private static Date retrieveAndPost(Twitter twitter, Date lastUpdate, final boolean actuallyPost) {
         List<Posting> postings = new ArrayList<Posting>();
         postings.addAll((new RSSRetriever(cfg.getFeedUrls())).retrieve());
         TwitterRetriever tr = new TwitterRetriever(cfg.getTwitterQueries(), twitterUser, cfg);
         postings.addAll(tr.retrieve());
         Collections.sort(postings);
-        Date date = new Date();
 
-        if (actuallyPost) {
-            date = postNewEntries(postings, twitter, lastUpdate);
-        }
-        return date;
+        return postNewEntries(postings, twitter, lastUpdate, actuallyPost);
     }
 
-    private static Date postNewEntries(List<Posting> entries, Twitter twitter, Date lastUpdate) {
+    private static Date postNewEntries(List<Posting> entries,
+                                       Twitter twitter,
+                                       Date lastUpdate,
+                                       final boolean actuallyPost) {
         int droppedOld = 0;
         int droppedBad = 0;
         int posted = 0;
@@ -112,7 +120,13 @@ public class TwitterBot {
             else if (lastUpdate.before(published)) {   // post ALL entries newer than lastPublished
                 String bad = cfg.isBadContent(entry.getStatus());
                 if (bad == null) {  // not bad words
-                    TwitterAPI.post(twitter, entry);
+                    String status = entry.getStatus();
+                    log.info("New entry published at " + entry.getUpdated());
+                    log.info("  status: " + status);
+                    log.info("  src: " + entry.getSrc());
+                    if (actuallyPost) {
+                        TwitterAPI.post(twitter, entry);
+                    }
                     posted++;
                     if (lastPublished.before(published)) {  // only update lastPublished if it's the newest
                         lastPublished = published;

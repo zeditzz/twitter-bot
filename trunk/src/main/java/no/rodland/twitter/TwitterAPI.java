@@ -1,10 +1,23 @@
 package no.rodland.twitter;
 
-import java.util.*;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import no.rodland.twitter.util.OAuth;
-import org.apache.log4j.Logger;
-import twitter4j.*;
+import twitter4j.PagableResponseList;
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.Status;
+import twitter4j.Tweet;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.User;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -172,10 +185,6 @@ public class TwitterAPI {
     public static void post(Twitter twitter, Posting entry) {
         String status = entry.getStatus();
 
-        log.info("New entry published at " + entry.getUpdated());
-        log.info("  status: " + status);
-        log.info("  src: " + entry.getSrc());
-
         log.info("Updating Twitter: " + status);
         if (status.length() > 140) {
             log.error("status longer than 140: " + status);
@@ -198,9 +207,9 @@ public class TwitterAPI {
     public static Twitter getAuthTwitter() {
         checkConfig();
         OAuth oAuth = new OAuth(config.getConsumerKey(),
-                                config.getConsumerKeySecret(),
-                                config.getAccessToken(),
-                                config.getAccessTokenSecret());
+                config.getConsumerKeySecret(),
+                config.getAccessToken(),
+                config.getAccessTokenSecret());
         return getAuthTwitter(oAuth);
     }
 
@@ -230,7 +239,7 @@ public class TwitterAPI {
     public synchronized static Twitter getAnonTwitter() {
         checkConfig();
         OAuth oAuth = new OAuth(config.getConsumerKey(),
-                                config.getConsumerKeySecret());
+                config.getConsumerKeySecret());
         return getAnonTwitter(oAuth);
     }
 

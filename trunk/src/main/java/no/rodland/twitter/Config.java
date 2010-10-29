@@ -1,12 +1,12 @@
 package no.rodland.twitter;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA. User: fmr Date: May 6, 2009 Time: 10:55:30 AM
@@ -44,12 +44,13 @@ public class Config {
     private static final String CFG_KEY_CONSUMER_KEY_SECRET = "consumer_key_secret";
     private static final String CFG_KEY_ACCESS_TOKEN = "access_token";
     private static final String CFG_KEY_ACCESS_TOKEN_SECRET = "access_token_secret";
+    private static final String CFG_KEY_ACTUALLY_POST = "ACTUALLY_POST";
 
     private Config() {
         config = new PropertiesConfiguration();
     }
 
-    @SuppressWarnings({ "UnusedDeclaration" })
+    @SuppressWarnings({"UnusedDeclaration"})
     public Config(String fileName) {
         log.info("Loading properties from " + fileName);
         try {
@@ -81,7 +82,7 @@ public class Config {
         }
         catch (ConfigurationException e) {
             log.error("ERROR setting last updated in " + config.getFileName() + " to " + config.getLong(
-                CFG_KEY_LASTUPDATED), e);
+                    CFG_KEY_LASTUPDATED), e);
         }
     }
 
@@ -90,12 +91,12 @@ public class Config {
         return new Date(time);
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     public List<String> getTwitterQueries() {
         return config.getList(CFG_KEY_TWITTER_QUERY);
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     List<String> getFollowerQueries() {
         return config.getList(CFG_KEY_FOLLOWER_QUERY);
     }
@@ -118,7 +119,7 @@ public class Config {
         if (content == null) {
             return null;
         }
-        @SuppressWarnings({ "unchecked" })
+        @SuppressWarnings({"unchecked"})
         List<String> badWords = config.getList(CFG_KEY_CONTENT_FILTER);
         content = content.toLowerCase();
         for (String badWord : badWords) {
@@ -161,9 +162,9 @@ public class Config {
     @Override
     public String toString() {
         return "getTwitterQueries() = " + getTwitterQueries() + "\n" +
-               "getFeedUrls() = " + getFeedUrls() + "\n" +
-               "getFollowerQueries() = " + getFollowerQueries() + "\n" +
-               "getLastUpdated() = " + getLastUpdated();
+                "getFeedUrls() = " + getFeedUrls() + "\n" +
+                "getFollowerQueries() = " + getFollowerQueries() + "\n" +
+                "getLastUpdated() = " + getLastUpdated();
     }
 
     public double getFollowFactor() {
@@ -216,5 +217,9 @@ public class Config {
 
     public String getAccessTokenSecret() {
         return config.getString(CFG_KEY_ACCESS_TOKEN_SECRET);
+    }
+
+    public boolean getActuallyPost() {
+        return config.getBoolean(CFG_KEY_ACTUALLY_POST);
     }
 }
