@@ -5,17 +5,22 @@ import java.util.List;
 import java.util.Set;
 
 import no.rodland.twitter.TwitterAPI;
-import twitter4j.*;
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.Tweet;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.User;
 
 /**
  * Created by IntelliJ IDEA. User: fmr Date: May 4, 2009 Time: 11:53:17 AM
  */
-@SuppressWarnings({ "WeakerAccess", "UnusedDeclaration" })
+@SuppressWarnings({"WeakerAccess", "UnusedDeclaration"})
 public class TwitterUtil {
 
     private static OAuth oAuth = new OAuth("", "", "", "");
 
-    @SuppressWarnings({ })
+    @SuppressWarnings({})
     public static void print() throws TwitterException {
         Twitter anonTwitter = TwitterAPI.getAnonTwitter();
         Twitter twitter = TwitterAPI.getAuthTwitter(oAuth);
@@ -42,7 +47,7 @@ public class TwitterUtil {
         System.out.println("USER-Name: " + user.getName());
         System.out.println("USER-lastupd: " + user.getStatus().getCreatedAt());
 
-        List<User> followers = twitter.getFollowersStatuses(twitter.getScreenName());
+        List<User> followers = twitter.getFollowersStatuses(twitter.getId());
         System.out.println("f: " + followers);
 
         Set<String> list = TwitterAPI.getFriends(twitter);
@@ -54,8 +59,8 @@ public class TwitterUtil {
             System.out.print(follower.getScreenName() + " OR ");
         }
         System.out.println("");
-        System.out.println("FRIENDS: " + twitter.getFriendsStatuses());
-        System.out.println("FOLLOW: " + twitter.getFollowersStatuses());
+        System.out.println("FRIENDS: " + twitter.getFriendsStatuses(twitter.getId()));
+        System.out.println("FOLLOW: " + twitter.getFollowersStatuses(twitter.getId()));
 
         // to follow
         //System.out.println(twitter.create("fredrikr"));

@@ -261,7 +261,6 @@ public class TwitterAPI {
     }
 
     private static Twitter getTwitter(ConfigurationBuilder confBuilder) {
-        confBuilder.setSource("web");
         Configuration configuration = confBuilder.build();
         TwitterFactory factory = new TwitterFactory(configuration);
         return factory.getInstance();

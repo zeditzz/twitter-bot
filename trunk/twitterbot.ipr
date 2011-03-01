@@ -150,6 +150,7 @@
           <option name="IGNORE_DEPRECATED" value="false" />
           <option name="IGNORE_JAVADOC_PERIOD" value="true" />
           <option name="IGNORE_DUPLICATED_THROWS" value="false" />
+          <option name="IGNORE_POINT_TO_ITSELF" value="false" />
           <option name="myAdditionalJavadocTags" value="todo,Since:,Author:" />
         </inspection_tool>
         <inspection_tool class="UNUSED_SYMBOL" enabled="false" level="WARNING" enabled_by_default="false">
@@ -159,24 +160,12 @@
           <option name="CLASS" value="true" />
           <option name="PARAMETER" value="true" />
           <option name="REPORT_PARAMETER_FOR_PUBLIC_METHODS" value="true" />
-          <option name="INJECTION_ANNOS">
-            <value>
-              <list size="0" />
-            </value>
-          </option>
         </inspection_tool>
       </profile>
     </profiles>
     <option name="PROJECT_PROFILE" value="Project Default" />
     <option name="USE_PROJECT_PROFILE" value="true" />
     <version value="1.0" />
-    <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="SERVER PROBLEM" />
-      <item index="1" class="java.lang.String" itemvalue="INFO" />
-      <item index="2" class="java.lang.String" itemvalue="TYPO" />
-      <item index="3" class="java.lang.String" itemvalue="WARNING" />
-      <item index="4" class="java.lang.String" itemvalue="ERROR" />
-    </list>
   </component>
   <component name="JUnitClassTemplateConfiguration">
     <option name="DONT_SHOW_TEMPLATE_DIALOG_IF_ONLY_ONE_TEMPLATE" value="false" />
@@ -381,6 +370,9 @@
   <component name="ProjectReloadState">
     <option name="STATE" value="0" />
   </component>
+  <component name="ProjectResources">
+    <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
@@ -492,81 +484,37 @@
     <find-history />
   </component>
   <component name="libraryTable">
-    <library name="Maven: junit:junit:4.5">
+    <library name="Maven: commons-beanutils:commons-beanutils-core:1.8.0">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.5/junit-4.5.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils-core/1.8.0/commons-beanutils-core-1.8.0.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.5/junit-4.5-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils-core/1.8.0/commons-beanutils-core-1.8.0-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.5/junit-4.5-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils-core/1.8.0/commons-beanutils-core-1.8.0-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: log4j:log4j:1.2.15">
+    <library name="Maven: commons-beanutils:commons-beanutils:1.7.0">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.15/log4j-1.2.15.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.15/log4j-1.2.15-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.15/log4j-1.2.15-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: javax.mail:mail:1.4">
+    <library name="Maven: commons-collections:commons-collections:3.2.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/mail/mail/1.4/mail-1.4.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/mail/mail/1.4/mail-1.4-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/mail/mail/1.4/mail-1.4-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: javax.activation:activation:1.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: javax.jms:jms:1.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/jms/jms/1.1/jms-1.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/jms/jms/1.1/jms-1.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/jms/jms/1.1/jms-1.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: com.sun.jdmk:jmxtools:1.2.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/sun/jdmk/jmxtools/1.2.1/jmxtools-1.2.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/sun/jdmk/jmxtools/1.2.1/jmxtools-1.2.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/sun/jdmk/jmxtools/1.2.1/jmxtools-1.2.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: com.sun.jmx:jmxri:1.2.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/sun/jmx/jmxri/1.2.1/jmxri-1.2.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/sun/jmx/jmxri/1.2.1/jmxri-1.2.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/sun/jmx/jmxri/1.2.1/jmxri-1.2.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: commons-configuration:commons-configuration:1.6">
@@ -580,15 +528,15 @@
         <root url="jar://$MAVEN_REPOSITORY$/commons-configuration/commons-configuration/1.6/commons-configuration-1.6-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: commons-collections:commons-collections:3.2.1">
+    <library name="Maven: commons-digester:commons-digester:1.8">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-digester/commons-digester/1.8/commons-digester-1.8.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-digester/commons-digester/1.8/commons-digester-1.8-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/commons-digester/commons-digester/1.8/commons-digester-1.8-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: commons-lang:commons-lang:2.4">
@@ -613,50 +561,6 @@
         <root url="jar://$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: commons-digester:commons-digester:1.8">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-digester/commons-digester/1.8/commons-digester-1.8.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-digester/commons-digester/1.8/commons-digester-1.8-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-digester/commons-digester/1.8/commons-digester-1.8-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: commons-beanutils:commons-beanutils:1.7.0">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: commons-beanutils:commons-beanutils-core:1.8.0">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils-core/1.8.0/commons-beanutils-core-1.8.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils-core/1.8.0/commons-beanutils-core-1.8.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/commons-beanutils/commons-beanutils-core/1.8.0/commons-beanutils-core-1.8.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: rome:rome:1.0">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/rome/rome/1.0/rome-1.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/rome/rome/1.0/rome-1.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/rome/rome/1.0/rome-1.0-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: jdom:jdom:1.0">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.0/jdom-1.0.jar!/" />
@@ -668,15 +572,48 @@
         <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.0/jdom-1.0-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.twitter4j:twitter4j-core:2.1.6">
+    <library name="Maven: junit:junit:4.8.2">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/twitter4j/twitter4j-core/2.1.6/twitter4j-core-2.1.6.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.2/junit-4.8.2.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/twitter4j/twitter4j-core/2.1.6/twitter4j-core-2.1.6-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.2/junit-4.8.2-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/twitter4j/twitter4j-core/2.1.6/twitter4j-core-2.1.6-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.2/junit-4.8.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: log4j:log4j:1.2.16">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.16/log4j-1.2.16.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.16/log4j-1.2.16-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.16/log4j-1.2.16-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.twitter4j:twitter4j-core:2.2.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/twitter4j/twitter4j-core/2.2.0/twitter4j-core-2.2.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/twitter4j/twitter4j-core/2.2.0/twitter4j-core-2.2.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/twitter4j/twitter4j-core/2.2.0/twitter4j-core-2.2.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: rome:rome:1.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/rome/rome/1.0/rome-1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/rome/rome/1.0/rome-1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/rome/rome/1.0/rome-1.0-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

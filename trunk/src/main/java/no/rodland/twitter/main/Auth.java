@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.http.AccessToken;
-import twitter4j.http.RequestToken;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
 
 /**
  * Used to set up oauth.  nearly identical to example in: http://twitter4j.org/en/code-examples.html#oauth
@@ -64,7 +64,7 @@ public class Auth {
         storeAccessToken(twitter.verifyCredentials().getId(), accessToken);
     }
 
-    private static void storeAccessToken(int useId, AccessToken accessToken) {
+    private static void storeAccessToken(long useId, AccessToken accessToken) {
         System.out.println("token = " + accessToken.getToken());
         System.out.println("tokensecret = " + accessToken.getTokenSecret());
     }
