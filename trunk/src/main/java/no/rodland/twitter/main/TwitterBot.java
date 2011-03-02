@@ -137,10 +137,11 @@ public class TwitterBot {
                     log.warn(entry);
                     if (cfg.sendEmail(bad)) {
                         System.err.println("filtered out content - will not post - bad word: " + bad);
-                        System.err.println("entry.getTitle()   = " + entry.getTitle());
-                        System.err.println("entry.getSrc()     = " + entry.getSrc());
-                        System.err.println("entry.getStatus()  = " + entry.getStatus());
+                        System.err.println();
                         System.err.println("entry.getUpdated() = " + published);
+                        System.err.println("entry.getStatus()  = " + entry.getStatus());
+                        System.err.println("entry.getSrc()     = " + entry.getSrc());
+                        System.err.println();
                     }
                     else {
                         log.warn("not sending emails for this because not-email in cfg");
