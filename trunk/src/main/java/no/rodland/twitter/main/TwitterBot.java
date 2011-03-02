@@ -25,8 +25,6 @@ public class TwitterBot {
     private static Config cfg;
     private static String twitterUser;
 
-    @SuppressWarnings({"FieldCanBeLocal"})
-
     public static void main(String[] args) {
         log.info("STARTING BOT");
         init(args);

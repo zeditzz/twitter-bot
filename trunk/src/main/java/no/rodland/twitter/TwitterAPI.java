@@ -168,10 +168,10 @@ public class TwitterAPI {
             else if (config.isBlacklisted(tweet.getFromUser())) {
                 droppedBlacklisted++;
             }
-            else if (tweetUC.startsWith("RT")) {
+            else if (tweetUC.contains("RT")) {
                 droppedRT++;
             }
-            else if (tweetUC.contains("(VIA @")) {
+            else if (tweetUC.contains("VIA @")) {
                 droppedVia++;
             }
             else {
