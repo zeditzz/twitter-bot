@@ -27,6 +27,7 @@ public class TwitterAPI {
     private static Twitter anonTwitter;
     private static Twitter authTwitter;
     static Config config;
+    private static Set<String> friendList = new HashSet<String>();
 
     public static void setConfig(Config config) {
         TwitterAPI.config = config;
@@ -82,24 +83,29 @@ public class TwitterAPI {
     }
 
     public static Set<String> getFriends(Twitter twitter) throws TwitterException {
-        Set<String> returnList = new HashSet<String>();
-        PagableResponseList<User> users = null;
-        //Paging paging = new Paging(page);
-        boolean first = true;
-        long next = -1L;
-        while (first || users.hasNext()) {
-            first = false;
-            users = twitter.getFriendsStatuses(next);
-            next = users.getNextCursor();
-            for (User user : users) {
-                returnList.add(user.getScreenName().toLowerCase());
+        if (friendList == null) {
+            friendList = new HashSet<String>();
+            PagableResponseList<User> users = null;
+            //Paging paging = new Paging(page);
+            boolean first = true;
+            long next = -1L;
+            while (first || users.hasNext()) {
+                first = false;
+                users = twitter.getFriendsStatuses(next);
+                next = users.getNextCursor();
+                for (User user : users) {
+                    friendList.add(user.getScreenName().toLowerCase());
+                }
+                log.trace("next friends-counter: " + next);
             }
-            log.trace("next friends-counter: " + next);
+            User eUser = twitter.verifyCredentials();
+            log.info(eUser.getScreenName() + " has " + getFriendCount(eUser) + " friends. (size of users-list: " + friendList.size() + ")");
         }
-        User eUser = twitter.verifyCredentials();
-        log.info(eUser.getScreenName() + " has " + getFriendCount(eUser) + " friends. (size of users-list: " + returnList.size() + ")");
-
-        return returnList;
+        else {
+            User eUser = twitter.verifyCredentials();
+            log.info("Returning cached version: " + eUser.getScreenName() + " has " + getFriendCount(eUser) + " friends. (size of users-list: " + friendList.size() + ")");
+        }
+        return friendList;
     }
 
     public static Set<String> getFollowersIDs(Twitter twitter) throws TwitterException {
