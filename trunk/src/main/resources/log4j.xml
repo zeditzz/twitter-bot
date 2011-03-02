@@ -13,7 +13,7 @@
     <logger name="twitter4j.internal.http.HttpClientImpl">
         <level value="info"/>
     </logger>
-    <logger name="twitter4j.http.OAuthAuthorization">
+    <logger name="twitter4j.auth.OAuthAuthorization">
         <level value="info"/>
     </logger>
     <root>
