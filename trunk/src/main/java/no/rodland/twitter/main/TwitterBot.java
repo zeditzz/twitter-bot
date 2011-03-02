@@ -155,9 +155,15 @@ public class TwitterBot {
 
         log.info("Got " + entries.size() + " entries");
         log.info("Posted " + posted);
-        log.info("Dropped " + droppedOld + " entries because they were too old");
-        log.info("Dropped " + droppedBad + " entries because they had bad content");
-        log.info("Dropped " + droppedMaxReached + " entries because max limit pr run was reached");
+        if (droppedOld > 0) {
+            log.info("Dropped " + droppedOld + " entries because they were too old");
+        }
+        if (droppedBad > 0) {
+            log.info("Dropped " + droppedBad + " entries because they had bad content");
+        }
+        if (droppedMaxReached > 0) {
+            log.info("Dropped " + droppedMaxReached + " entries because max limit pr run was reached");
+        }
 
         return lastPublished;
     }
