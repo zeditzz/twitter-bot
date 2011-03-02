@@ -1,8 +1,13 @@
 package no.rodland.twitter;
 
-import java.util.*;
-
 import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import twitter4j.Tweet;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -57,17 +62,17 @@ public class FollowerRetriever {
         }
 
         int followedPosters = followFolks(friends,
-                                          FollowType.POSTERS,
-                                          getPosters(),
-                                          numberOfFriends,
-                                          numberOfFollowers);
+                FollowType.POSTERS,
+                getPosters(),
+                numberOfFriends,
+                numberOfFollowers);
         numberOfFriends += followedPosters;
         // check (again) that the limit isn't reached
         int followedFollowers = followFolks(friends,
-                                            FollowType.FOLLOWERS,
-                                            followers,
-                                            numberOfFriends,
-                                            numberOfFollowers);
+                FollowType.FOLLOWERS,
+                followers,
+                numberOfFriends,
+                numberOfFollowers);
 
         log.info("followed " + followedPosters + " posters and " + followedFollowers + " friends");
         return followedFollowers + followedPosters;
@@ -84,7 +89,9 @@ public class FollowerRetriever {
                 destroyed.add(friend);
             }
         }
-        log.info("un-followed the following friends: " + destroyed);
+        if (destroyed.size() > 0) {
+            log.info("un-followed the following friends: " + destroyed);
+        }
         return destroyed.size();
     }
 
