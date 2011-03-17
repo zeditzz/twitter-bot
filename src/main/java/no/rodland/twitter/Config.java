@@ -1,12 +1,12 @@
 package no.rodland.twitter;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.log4j.Logger;
 
 /**
  * Created by IntelliJ IDEA. User: fmr Date: May 6, 2009 Time: 10:55:30 AM
@@ -46,11 +46,17 @@ public class Config {
     private static final String CFG_KEY_ACCESS_TOKEN_SECRET = "access_token_secret";
     private static final String CFG_KEY_ACTUALLY_POST = "ACTUALLY_POST";
 
+    private static final String CFG_KEY_EMAIL_CONTENT_FILTER = "EMAIL_CONTENT_FILTER";
+    private static final String CFG_KEY_SMTP_USER = "SMTP_USER";
+    private static final String CFG_KEY_SMTP_PASSWORD = "SMTP_PASSWORD";
+    private static final String CFG_KEY_SMTP_FROM_ADDR = "SMTP_FROM_ADDR";
+    private static final String CFG_KEY_SMTP_HOST = "SMTP_HOST";
+
     private Config() {
         config = new PropertiesConfiguration();
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
+    @SuppressWarnings( { "UnusedDeclaration" })
     public Config(String fileName) {
         log.info("Loading properties from " + fileName);
         try {
@@ -82,7 +88,7 @@ public class Config {
         }
         catch (ConfigurationException e) {
             log.error("ERROR setting last updated in " + config.getFileName() + " to " + config.getLong(
-                    CFG_KEY_LASTUPDATED), e);
+                CFG_KEY_LASTUPDATED), e);
         }
     }
 
@@ -91,12 +97,12 @@ public class Config {
         return new Date(time);
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings( { "unchecked" })
     public List<String> getTwitterQueries() {
         return config.getList(CFG_KEY_TWITTER_QUERY);
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings( { "unchecked" })
     List<String> getFollowerQueries() {
         return config.getList(CFG_KEY_FOLLOWER_QUERY);
     }
@@ -119,7 +125,7 @@ public class Config {
         if (content == null) {
             return null;
         }
-        @SuppressWarnings({"unchecked"})
+        @SuppressWarnings( { "unchecked" })
         List<String> badWords = config.getList(CFG_KEY_CONTENT_FILTER);
         content = content.toLowerCase();
         for (String badWord : badWords) {
@@ -130,7 +136,7 @@ public class Config {
         return null;
     }
 
-    public boolean sendEmail(String bad) {
+    public boolean sendEmailForBadWords(String bad) {
         boolean doNotSendEmail = config.getList(CFG_KEY_NOT_SEND_EMAIL_FOR_THESE_WORDS).contains(bad);
         return !doNotSendEmail;
     }
@@ -162,9 +168,9 @@ public class Config {
     @Override
     public String toString() {
         return "getTwitterQueries() = " + getTwitterQueries() + "\n" +
-                "getFeedUrls() = " + getFeedUrls() + "\n" +
-                "getFollowerQueries() = " + getFollowerQueries() + "\n" +
-                "getLastUpdated() = " + getLastUpdated();
+               "getFeedUrls() = " + getFeedUrls() + "\n" +
+               "getFollowerQueries() = " + getFollowerQueries() + "\n" +
+               "getLastUpdated() = " + getLastUpdated();
     }
 
     public double getFollowFactor() {
@@ -221,5 +227,30 @@ public class Config {
 
     public boolean getActuallyPost() {
         return config.getBoolean(CFG_KEY_ACTUALLY_POST);
+    }
+
+    public String getSmtpHost() {
+        return config.getString(CFG_KEY_SMTP_HOST);
+    }
+
+    public String getSmtpFrom() {
+        return config.getString(CFG_KEY_SMTP_FROM_ADDR);
+    }
+
+    public String getSmtpPassword() {
+        return config.getString(CFG_KEY_SMTP_PASSWORD);
+    }
+
+    public String getSmtpUser() {
+        return config.getString(CFG_KEY_SMTP_USER);
+    }
+
+    public String getEmailContentFilter() {
+        return config.getString(CFG_KEY_EMAIL_CONTENT_FILTER);
+    }
+
+    public boolean sendEmailContentFilter() {
+        final String email = getEmailContentFilter();
+        return email != null && email.contains("@");
     }
 }
