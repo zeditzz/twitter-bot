@@ -6,7 +6,7 @@ import java.util.List;
 
 import no.rodland.twitter.TwitterAPI;
 import org.apache.log4j.Logger;
-import twitter4j.Tweet;
+import twitter4j.Status;
 import twitter4j.TwitterException;
 
 /**
@@ -38,8 +38,8 @@ public class Searcher extends AuthMain {
 
     @Override
     void doWork() throws TwitterException {
-        List<Tweet> result = TwitterAPI.search(searchTerms, "testusername");
-        for (Tweet tweet : result) {
+        List<Status> result = TwitterAPI.search(searchTerms, "testusername");
+        for (Status tweet : result) {
             System.out.println("tweet = " + tweet);
         }
     }

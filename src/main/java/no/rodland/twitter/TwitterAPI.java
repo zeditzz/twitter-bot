@@ -1,7 +1,5 @@
 package no.rodland.twitter;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,11 +7,11 @@ import java.util.List;
 import java.util.Set;
 
 import no.rodland.twitter.util.OAuth;
+import org.apache.log4j.Logger;
 import twitter4j.PagableResponseList;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Status;
-import twitter4j.Tweet;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -125,12 +123,12 @@ public class TwitterAPI {
         return returnList;
     }
 
-    public static List<Tweet> search(List<String> queries, String excludedTwitterUser) {
+    public static List<Status> search(List<String> queries, String excludedTwitterUser) {
         checkConfig();
         Twitter anonTwitter = getAnonTwitter();
         Query query = new Query(getSearchStringExcludingUser(queries, excludedTwitterUser));
 
-        query.setRpp(config.getTwitterHits());
+        query.setCount(config.getTwitterHits());
         QueryResult result = null;
         try {
             result = anonTwitter.search(query);
@@ -146,26 +144,26 @@ public class TwitterAPI {
         return Collections.emptyList();
     }
 
-    static List<Posting> getPostings(List<Tweet> tweets) {
+    static List<Posting> getPostings(List<Status> tweets) {
         List<Posting> postings = new ArrayList<Posting>();
-        for (Tweet tweet : tweets) {
+        for (Status tweet : tweets) {
             postings.add(new Posting(tweet));
         }
         return postings;
     }
 
-    static List<Tweet> filterTweets(List<Tweet> tweets, String twitterUser) {
+    static List<Status> filterTweets(List<Status> tweets, String twitterUser) {
         checkConfig();
-        List<Tweet> filteredTweets = new ArrayList<Tweet>();
+        List<Status> filteredTweets = new ArrayList<Status>();
         int droppedOwn = 0;
         int droppedReplies = 0;
         int droppedRT = 0;
         int droppedVia = 0;
         int droppedBlacklisted = 0;
 
-        for (Tweet tweet : tweets) {
+        for (Status tweet : tweets) {
             String tweetUC = tweet.getText().toUpperCase();
-            if (twitterUser.equals(tweet.getFromUser())) {
+            if (twitterUser.equals(tweet.getUser().getName())) {
                 droppedOwn++;
             }
             else if (tweet.getToUser() != null) {

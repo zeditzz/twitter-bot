@@ -7,7 +7,7 @@ import java.util.Set;
 import no.rodland.twitter.TwitterAPI;
 import twitter4j.Query;
 import twitter4j.QueryResult;
-import twitter4j.Tweet;
+import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
@@ -26,13 +26,13 @@ public class TwitterUtil {
         Twitter twitter = TwitterAPI.getAuthTwitter(oAuth);
         //Twitter twitter = new TwitterFactory().getInstance(TWITTER_USER, TWITTER_PASSWORD);
         Query query = new Query("cnn.com");
-        query.setRpp(30);
+        query.setCount(30);
         QueryResult result = anonTwitter.search(query);
         HashSet<String> users = new HashSet<String>();
-        Tweet tweet = result.getTweets().get(0);
+        Status tweet = result.getTweets().get(0);
         //for (Tweet tweet : result.getTweets()) {
-        System.out.println(tweet.getFromUser() + ":" + tweet.getText());
-        users.add(tweet.getFromUser());
+        System.out.println(tweet.getUser().getName() + ":" + tweet.getText());
+        users.add(tweet.getUser().getName());
         //}
         System.out.println("users = " + users);
         System.out.println("num users = " + users.size());
