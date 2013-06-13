@@ -1,14 +1,12 @@
 package no.rodland.twitter;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-
 import java.util.Date;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.sun.syndication.feed.synd.SyndEntry;
 import org.apache.log4j.Logger;
 import twitter4j.Status;
-import twitter4j.Tweet;
 
 /**
  * <p/>
@@ -54,10 +52,6 @@ public class Posting implements Comparable<Posting> {
 
     public Posting(Status status) {
         this(status.getCreatedAt(), getTitle(status), "Twitter: @" + status.getUser().getScreenName() + " (" + status.getId() + ")");
-    }
-
-    public Posting(Tweet tweet) {
-        this(tweet.getCreatedAt(), getTitle(tweet), "Twitter: @" + tweet.getFromUser() + " (" + tweet.getId() + ")");
     }
 
     public Date getUpdated() {
@@ -160,10 +154,6 @@ public class Posting implements Comparable<Posting> {
 
     private static boolean areEqual(Object aThis, Object aThat) {
         return aThis == null ? aThat == null : aThis.equals(aThat);
-    }
-
-    private static String getTitle(Tweet tweet) {
-        return getReTweetTitle(tweet.getFromUser(), tweet.getText());
     }
 
     private static String getTitle(Status status) {

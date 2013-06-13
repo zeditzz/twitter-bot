@@ -1,14 +1,13 @@
 package no.rodland.twitter;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import twitter4j.Tweet;
+import org.apache.log4j.Logger;
+import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
@@ -46,33 +45,24 @@ public class FollowerRetriever {
             numberOfFriends = TwitterAPI.getFriendCount(twitter);
             followers = TwitterAPI.getFollowersIDs(twitter);
             numberOfFollowers = TwitterAPI.getFollowerCount(twitter);
-        }
-        catch (TwitterException e) {
+        } catch (TwitterException e) {
             log.error("Exception when getting friends or followers from twitter.", e);
             return 0;
         }
 
-        int numerbNew = (int) Math.ceil((cfg.getFollowFactor() * numberOfFollowers) - numberOfFriends);
-        if (numerbNew < 1) {
+        int numberNew = (int) Math.ceil((cfg.getFollowFactor() * numberOfFollowers) - numberOfFriends);
+        if (numberNew < 1) {
             log.info("No more room for new friends for now.");
             return 0;
         }
         else {
-            log.info("Should be able to follow " + numerbNew + " new friends.");
+            log.info("Should be able to follow " + numberNew + " new friends.");
         }
 
-        int followedPosters = followFolks(friends,
-                FollowType.POSTERS,
-                getPosters(),
-                numberOfFriends,
-                numberOfFollowers);
+        int followedPosters = followFolks(friends, FollowType.POSTERS, getPosters(), numberOfFriends, numberOfFollowers);
         numberOfFriends += followedPosters;
         // check (again) that the limit isn't reached
-        int followedFollowers = followFolks(friends,
-                FollowType.FOLLOWERS,
-                followers,
-                numberOfFriends,
-                numberOfFollowers);
+        int followedFollowers = followFolks(friends, FollowType.FOLLOWERS, followers, numberOfFriends, numberOfFollowers);
 
         log.info("followed " + followedPosters + " posters and " + followedFollowers + " friends");
         return followedFollowers + followedPosters;
@@ -84,7 +74,7 @@ public class FollowerRetriever {
         //int destroyed = 0;
         for (String friend : friends) {
             if (cfg.isBlacklisted(friend)) {
-                log.info(friend + " is balcklisted since last time, unfollowing");
+                log.info(friend + " is blacklisted since last time, unfollowing");
                 twitter.destroyFriendship(friend);
                 destroyed.add(friend);
             }
@@ -122,8 +112,7 @@ public class FollowerRetriever {
                     nmbFollowed++;
                     numberOfFriends++;
                     friends.add(potentialId);
-                }
-                catch (TwitterException e) {
+                } catch (TwitterException e) {
                     log.error("Error trying to befriend", e);
                 }
             }
@@ -153,10 +142,10 @@ public class FollowerRetriever {
     private Set<String> getPosters() {
         Set<String> users = new HashSet<String>();
         TwitterAPI.setConfig(cfg);
-        List<Tweet> tweets = TwitterAPI.search(queries, twitterUser);
+        List<Status> tweets = TwitterAPI.search(queries, twitterUser);
         tweets = TwitterAPI.filterTweets(tweets, twitterUser);
-        for (Tweet tweet : tweets) {
-            users.add(tweet.getFromUser().toLowerCase());
+        for (Status tweet : tweets) {
+            users.add(tweet.getUser().getName().toLowerCase());
         }
         return users;
     }
