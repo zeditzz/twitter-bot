@@ -25,7 +25,9 @@ public class TwitterAPI {
     private static Twitter anonTwitter;
     private static Twitter authTwitter;
     static Config config;
-    private static Set<String> friendList = new HashSet<String>();
+    private static Set<String> friendList;
+    private static Set<String> followersList;
+    private static User user;
 
     public static void setConfig(Config config) {
         TwitterAPI.config = config;
@@ -55,11 +57,11 @@ public class TwitterAPI {
     }
 
     public static int getFriendCount(Twitter twitter) throws TwitterException {
-        return getFriendCount(twitter.verifyCredentials());
+        return getFriendCount(getUser(twitter));
     }
 
     public static int getFollowerCount(Twitter twitter) throws TwitterException {
-        return getFollowerCount(twitter.verifyCredentials());
+        return getFollowerCount(getUser(twitter));
     }
 
     public static int getFriendCount(User user) throws TwitterException {
@@ -86,12 +88,12 @@ public class TwitterAPI {
                 }
                 log.trace("next friends-counter: " + next);
             }
-            User eUser = twitter.verifyCredentials();
+            User eUser = getUser(twitter);
             log.info(eUser.getScreenName() + " has " + getFriendCount(eUser) + " friends. (size of users-list: " + friendList.size()
                      + ")");
         }
         else {
-            User eUser = twitter.verifyCredentials();
+            User eUser = getUser(twitter);
             log.info("Returning cached version: " + eUser.getScreenName() + " has " + getFriendCount(eUser) + " friends. (size of " +
                      "users-list: " + friendList.size() + ")");
         }
@@ -99,21 +101,26 @@ public class TwitterAPI {
     }
 
     public static Set<String> getFollowersIDs(Twitter twitter) throws TwitterException {
-        Set<String> returnList = new HashSet<String>();
-
-        PagableResponseList<User> users = twitter.getFollowersList(twitter.getScreenName(), -1L);
-        while (users.hasNext()) {
-            for (User user : users) {
-                returnList.add(user.getScreenName().toLowerCase());
+        if (followersList == null) {
+            followersList = new HashSet<String>();
+            PagableResponseList<User> users = twitter.getFollowersList(twitter.getScreenName(), -1L);
+            while (users.hasNext()) {
+                for (User user : users) {
+                    followersList.add(user.getScreenName().toLowerCase());
+                }
+                long next = users.getNextCursor();
+                users = twitter.getFollowersList(twitter.getScreenName(), next);
             }
-            long next = users.getNextCursor();
-            users = twitter.getFollowersList(twitter.getScreenName(), next);
+            User eUser = getUser(twitter);
+            log.info(eUser.getScreenName() + " has " + getFollowerCount(eUser) +
+                     " followers. (size of users-list: " + followersList.size() + ")");
         }
-        User eUser = twitter.verifyCredentials();
-        log.info(eUser.getScreenName() + " has " + getFollowerCount(eUser) + " followers. (size of users-list: " + returnList.size()
-                 + ")");
-        // Must be a better way (but Array.asList does not seem to work for primitives
-        return returnList;
+        else {
+            User eUser = getUser(twitter);
+            log.info("Returning cached version: " + eUser.getScreenName() + " has " + getFollowerCount(eUser) +
+                     " followers. (size of users-list: " + followersList.size() + ")");
+        }
+        return followersList;
     }
 
     public static List<Status> search(List<String> queries, String excludedTwitterUser) {
@@ -227,6 +234,7 @@ public class TwitterAPI {
             confBuilder.setOAuthConsumerSecret(oAuthConsumerSecret);
             confBuilder.setOAuthAccessToken(authAccessToken);
             confBuilder.setOAuthAccessTokenSecret(tokenSecret);
+
             authTwitter = getTwitter(confBuilder);
         }
         return authTwitter;
@@ -248,9 +256,16 @@ public class TwitterAPI {
 
         if (anonTwitter == null) {
             ConfigurationBuilder confBuilder = new ConfigurationBuilder();
+            confBuilder.setUseSSL(true);
+            confBuilder.setApplicationOnlyAuthEnabled(true);
             confBuilder.setOAuthConsumerKey(oAuthConsumerKey);
             confBuilder.setOAuthConsumerSecret(oAuthConsumerSecret);
             anonTwitter = getTwitter(confBuilder);
+            try {
+                anonTwitter.getOAuth2Token();
+            } catch (TwitterException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
         return anonTwitter;
     }
@@ -266,6 +281,13 @@ public class TwitterAPI {
             System.err.println("TwitterAPI.checkConfig: Config not correctly set up. exiting");
             System.exit(3);
         }
+    }
+
+    private static User getUser(Twitter twitter) throws TwitterException {
+        if (user == null) {
+            user = twitter.verifyCredentials();
+        }
+        return user;
     }
 }
 
