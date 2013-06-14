@@ -3,7 +3,7 @@ package no.rodland.twitter;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import twitter4j.Tweet;
+import twitter4j.Status;
 
 public class TwitterRetriever {
 
@@ -20,7 +20,7 @@ public class TwitterRetriever {
 
     public List<Posting> retrieve() {
         TwitterAPI.setConfig(cfg);
-        List<Tweet> tweets = TwitterAPI.search(queries, twitterUser);
+        List<Status> tweets = TwitterAPI.search(queries, twitterUser);
         tweets = TwitterAPI.filterTweets(tweets, twitterUser);
         List<Posting> postings = TwitterAPI.getPostings(tweets);
         log.info("got " + postings.size() + " twitter-postings");

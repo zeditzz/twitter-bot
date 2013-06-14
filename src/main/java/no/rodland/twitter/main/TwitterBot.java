@@ -1,12 +1,18 @@
 package no.rodland.twitter.main;
 
-import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import javax.mail.MessagingException;
 
-import no.rodland.twitter.*;
+import no.rodland.twitter.Config;
+import no.rodland.twitter.FollowerRetriever;
+import no.rodland.twitter.Posting;
+import no.rodland.twitter.RSSRetriever;
+import no.rodland.twitter.TwitterAPI;
+import no.rodland.twitter.TwitterRetriever;
 import org.apache.log4j.Logger;
 import twitter4j.RateLimitStatus;
 import twitter4j.Twitter;
@@ -29,10 +35,7 @@ public class TwitterBot {
         try {
             cfg = new Config(cfgFile);
             if (cfg.sendEmailContentFilter()) {
-                emailSender = new EmailSender(cfg.getSmtpUser(),
-                                              cfg.getSmtpPassword(),
-                                              cfg.getSmtpHost(),
-                                              cfg.getSmtpFrom());
+                emailSender = new EmailSender(cfg.getSmtpUser(), cfg.getSmtpPassword(), cfg.getSmtpHost(), cfg.getSmtpFrom());
             }
 
             TwitterAPI.setConfig(cfg);
@@ -58,19 +61,15 @@ public class TwitterBot {
             logRateInfo(twitter);
             cfg.update(lastUpdate);
             log.info("Latest status is now: " + lastUpdate);
-        }
-        catch (TwitterException e) {
+        } catch (TwitterException e) {
             handleFatalException("TwitterException caught", e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             handleFatalException("Exception caught, User: " + user, e);
         }
         log.info("ENDING BOT");
     }
 
-    private static Date callTwitter(Twitter twitter,
-                                    Date lastUpdate,
-                                    final boolean actuallyPost) throws TwitterException {
+    private static Date callTwitter(Twitter twitter, Date lastUpdate, final boolean actuallyPost) throws TwitterException {
         Date lastPublished = retrieveAndPost(twitter, lastUpdate, actuallyPost);
         FollowerRetriever followerRetriever = new FollowerRetriever(twitter, cfg);
         followerRetriever.followNew();
@@ -88,10 +87,7 @@ public class TwitterBot {
         return postNewEntries(postings, twitter, lastUpdate, actuallyPost);
     }
 
-    private static Date postNewEntries(List<Posting> entries,
-                                       Twitter twitter,
-                                       Date lastUpdate,
-                                       final boolean actuallyPost) {
+    private static Date postNewEntries(List<Posting> entries, Twitter twitter, Date lastUpdate, final boolean actuallyPost) {
         int droppedOld = 0;
         int droppedBad = 0;
         int posted = 0;
@@ -160,12 +156,8 @@ public class TwitterBot {
     }
 
     private static void logRateInfo(Twitter twitter) throws TwitterException {
-        RateLimitStatus rls = twitter.getRateLimitStatus();
-        log.info("reset-time in sec = " + rls.getResetTimeInSeconds());
-        log.info("reset-time        = " + rls.getResetTime());
-        log.info("sec to reset      = " + rls.getSecondsUntilReset());
-        log.info("limit             = " + rls.getHourlyLimit());
-        log.info("remaining calls   = " + rls.getRemainingHits());
+        Map<String, RateLimitStatus> rls = twitter.getRateLimitStatus();
+        log.info(rls);
     }
 
     private static void logPost(Posting entry) {
@@ -174,10 +166,7 @@ public class TwitterBot {
         log.info("  src: " + entry.getSrc());
     }
 
-    private static void logSummary(List<Posting> entries,
-                                   int posted, int droppedOld,
-                                   int droppedBad,
-                                   int droppedMaxReached) {
+    private static void logSummary(List<Posting> entries, int posted, int droppedOld, int droppedBad, int droppedMaxReached) {
         log.info("Got " + entries.size() + " entries");
         log.info("Posted " + posted);
         log.info("Dropped " + droppedOld + " entries because they were too old");
@@ -207,8 +196,7 @@ public class TwitterBot {
                 System.err.println("entry.getSrc()     = " + entry.getSrc());
                 System.err.println();
             }
-        }
-        catch (MessagingException e) {
+        } catch (MessagingException e) {
             log.error("Error sending mail", e);
         }
     }
