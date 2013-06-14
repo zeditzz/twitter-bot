@@ -22,6 +22,9 @@ public class TwitterUtil {
 
     @SuppressWarnings({})
     public static void print() throws TwitterException {
+
+        // TODO does not work without config.
+
         Twitter anonTwitter = TwitterAPI.getAnonTwitter();
         Twitter twitter = TwitterAPI.getAuthTwitter(oAuth);
         //Twitter twitter = new TwitterFactory().getInstance(TWITTER_USER, TWITTER_PASSWORD);
@@ -31,8 +34,8 @@ public class TwitterUtil {
         HashSet<String> users = new HashSet<String>();
         Status tweet = result.getTweets().get(0);
         //for (Tweet tweet : result.getTweets()) {
-        System.out.println(tweet.getUser().getName() + ":" + tweet.getText());
-        users.add(tweet.getUser().getName());
+        System.out.println(tweet.getUser().getScreenName() + ":" + tweet.getText());
+        users.add(tweet.getUser().getScreenName());
         //}
         System.out.println("users = " + users);
         System.out.println("num users = " + users.size());
@@ -44,27 +47,15 @@ public class TwitterUtil {
         System.out.println("USER-DET: " + user);
         System.out.println("USER-ID: " + user.getId());
         System.out.println("USER-SName: " + user.getScreenName());
-        System.out.println("USER-Name: " + user.getName());
+        System.out.println("USER-Name: " + user.getScreenName());
         System.out.println("USER-lastupd: " + user.getStatus().getCreatedAt());
 
-        List<User> followers = twitter.getFollowersStatuses(twitter.getId());
+        List<User> followers = twitter.getFollowersList(twitter.getId(), -1);
         System.out.println("f: " + followers);
 
         Set<String> list = TwitterAPI.getFriends(twitter);
         System.out.println("list.size() = " + list.size());
         System.out.println("list = " + list);
-
-        System.out.print("boston AND (");
-        for (User follower : followers) {
-            System.out.print(follower.getScreenName() + " OR ");
-        }
-        System.out.println("");
-        System.out.println("FRIENDS: " + twitter.getFriendsStatuses(twitter.getId()));
-        System.out.println("FOLLOW: " + twitter.getFollowersStatuses(twitter.getId()));
-
-        // to follow
-        //System.out.println(twitter.create("fredrikr"));
-
     }
 
     public static void main(String[] args) throws TwitterException {
