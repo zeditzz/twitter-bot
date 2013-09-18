@@ -71,9 +71,11 @@ public class TwitterBot {
 
     private static Date callTwitter(Twitter twitter, Date lastUpdate, final boolean actuallyPost) throws TwitterException {
         Date lastPublished = retrieveAndPost(twitter, lastUpdate, actuallyPost);
+
+        // TODO follow/unfollow
         FollowerRetriever followerRetriever = new FollowerRetriever(twitter, cfg);
-        followerRetriever.followNew();
-        followerRetriever.unfollowBlackList();
+        //followerRetriever.followNew();
+        //followerRetriever.unfollowBlackList();
         return lastPublished;
     }
 
