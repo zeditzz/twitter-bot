@@ -2,7 +2,6 @@ package no.rodland.twitter.util;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import no.rodland.twitter.TwitterAPI;
 import twitter4j.Query;
@@ -53,9 +52,9 @@ public class TwitterUtil {
         List<User> followers = twitter.getFollowersList(twitter.getId(), -1);
         System.out.println("f: " + followers);
 
-        Set<String> list = TwitterAPI.getFriends(twitter);
-        System.out.println("list.size() = " + list.size());
-        System.out.println("list = " + list);
+        //TODO FIX: Set<String> list = TwitterAPI.getFriends(twitter);
+        //System.out.println("list.size() = " + list.size());
+        //System.out.println("list = " + list);
     }
 
     public static void main(String[] args) throws TwitterException {

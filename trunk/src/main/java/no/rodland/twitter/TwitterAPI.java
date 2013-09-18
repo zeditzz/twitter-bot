@@ -72,7 +72,7 @@ public class TwitterAPI {
         return user.getFollowersCount();
     }
 
-    public static Set<String> getFriends(Twitter twitter) throws TwitterException {
+    public static Set<String> getFriends_does_not_work(Twitter twitter) throws TwitterException {
         if (friendList == null) {
             friendList = new HashSet<String>();
             PagableResponseList<User> users = null;
@@ -100,7 +100,7 @@ public class TwitterAPI {
         return friendList;
     }
 
-    public static Set<String> getFollowersIDs(Twitter twitter) throws TwitterException {
+    public static Set<String> getFollowersIDs_does_not_work(Twitter twitter) throws TwitterException {
         if (followersList == null) {
             followersList = new HashSet<String>();
             PagableResponseList<User> users = twitter.getFollowersList(twitter.getScreenName(), -1L);

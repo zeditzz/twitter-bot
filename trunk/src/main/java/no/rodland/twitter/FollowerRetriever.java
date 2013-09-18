@@ -20,7 +20,6 @@ public class FollowerRetriever {
     private Twitter twitter;
 
     private enum FollowType {
-
         POSTERS, FOLLOWERS;
 
         public String toString() {
@@ -35,15 +34,15 @@ public class FollowerRetriever {
         this.twitter = twitter;
     }
 
-    public int followNew() {
+    public int followNew_does_not_work() {
         Set<String> friends;
         Set<String> followers;
         int numberOfFriends;
         int numberOfFollowers;
         try {
-            friends = TwitterAPI.getFriends(twitter);
+            friends = TwitterAPI.getFriends_does_not_work(twitter);
             numberOfFriends = TwitterAPI.getFriendCount(twitter);
-            followers = TwitterAPI.getFollowersIDs(twitter);
+            followers = TwitterAPI.getFollowersIDs_does_not_work(twitter);
             numberOfFollowers = TwitterAPI.getFollowerCount(twitter);
         } catch (TwitterException e) {
             log.error("Exception when getting friends or followers from twitter.", e);
@@ -68,8 +67,8 @@ public class FollowerRetriever {
         return followedFollowers + followedPosters;
     }
 
-    public int unfollowBlackList() throws TwitterException {
-        Set<String> friends = TwitterAPI.getFriends(twitter);
+    public int unfollowBlackList_does_not_work() throws TwitterException {
+        Set<String> friends = TwitterAPI.getFriends_does_not_work(twitter);
         List<String> destroyed = new ArrayList<String>();
         //int destroyed = 0;
         for (String friend : friends) {
